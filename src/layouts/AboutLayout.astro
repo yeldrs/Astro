@@ -195,7 +195,7 @@ const about = lang === "fr" ? aboutFr : aboutEn;
           about.languages.map((language) => (
             <li class="px-3 py-1.5 bg-gray-50 rounded-lg text-sm text-text-body-primary">
               <span class="font-semibold">{language.name}</span>
-              <span class="text-text-body-secondary">{lang === "fr" ? ` : ${language.level}` : ` — ${language.level}`}</span>
+              <span class="text-text-body-secondary">{` : ${language.level}`}</span>
             </li>
           ))
         }
