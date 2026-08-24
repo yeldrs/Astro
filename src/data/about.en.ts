@@ -3,7 +3,7 @@
 import type { AboutData } from "./about.types";
 
 export const about: AboutData = {
-  introHeading: "My name is Yassine and I'm a Product designer.",
+  introHeading: "I'm a Product designer.",
   introBody:
     "I focus on user research and business performance, turning user insights into genuine interactions that stimulate growth, answer needs and keep people coming back. I am committed to projects that have a social and environmental impact",
   introCta: "Let's connect",

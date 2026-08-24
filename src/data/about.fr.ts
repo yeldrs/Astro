@@ -6,7 +6,7 @@
 import type { AboutData } from "./about.types";
 
 export const about: AboutData = {
-  introHeading: "Je suis Yassine El Idrissi, Designer Ops et stratégie produit.",
+  introHeading: "Designer Ops et stratégie produit.",
   introBody:
     "Spécialisé en UX, je transforme les insights utilisateur en leviers concrets de performance business où l'inclusivité, l'accessibilité et l'éthique deviennent des critères de conception.",
   introCta: "Discutons",
