@@ -6,6 +6,13 @@ Complète l'ACTION LOG historique du whitepaper (`Whitepaper d'architecture — 
 
 ---
 
+## 2026-08-24 (suite 2) — CTA "Let's connect"/"Discutons" de la page About : copie email + mailto
+
+### FAIT
+- `[2026-08-24]` — Sur demande du propriétaire : le bouton CTA en haut de la page About (`introCta`) ne faisait que scroller vers `#contact` (widget de copie email dans le Footer) — statut : fait
+- `[2026-08-24]` — `src/layouts/AboutLayout.astro` — `href` du `Button` changé de `#contact` vers `mailto:contact@yassineelidrissi.com` (déclenche l'ouverture du client mail par défaut, comportement natif du navigateur) ; `onclick` ajouté pour copier l'adresse dans le presse-papiers au clic, avant la navigation mailto — logique reprise de `copyToClipboard` dans `Footer.astro` (même toast, event Umami dédié `about-email-copy`) — statut : fait
+- Testé en preview (`astro preview`) via navigateur automatisé : le clic déclenche bien la navigation `mailto:` et la copie presse-papiers ; le navigateur affiche une confirmation native "ouvrir l'application mail ?" au clic sur un lien `mailto:` (comportement standard, hors du contrôle du code) — cette boîte de dialogue a bloqué le rendu de l'onglet de test automatisé (attendu, cf. limite connue des dialogues natifs en automatisation navigateur) mais ne pose aucun problème pour un visiteur réel — statut : fait, vérification manuelle en navigateur réel recommandée par le propriétaire pour confirmer le rendu du toast après fermeture du dialogue mail.
+
 ## 2026-08-24 (suite) — Retrait des tirets cadratins (—) du contenu du site
 
 ### FAIT

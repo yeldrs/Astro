@@ -4,6 +4,7 @@ import Container from "../components/Container.astro";
 import Button from "../components/Button.astro";
 import { about as aboutEn } from "../data/about.en";
 import { about as aboutFr } from "../data/about.fr";
+import { useTranslations } from "../i18n/utils";
 
 export interface Props {
   lang: "en" | "fr";
@@ -11,6 +12,64 @@ export interface Props {
 
 const { lang } = Astro.props;
 const about = lang === "fr" ? aboutFr : aboutEn;
+const t = useTranslations(lang);
+
+const emailAddress = "contact@yassineelidrissi.com";
+
+// Copies the email to the clipboard on click, then lets the native mailto:
+// navigation proceed (no preventDefault) so the user's mail client opens too.
+const copyEmailOnClick = `(function(e) {
+const email = "${emailAddress}";
+const clickedElement = e.currentTarget;
+
+if (window.umami) umami.track("about-email-copy");
+
+if (window.isSecureContext === false && window.location.protocol !== 'http:') {
+   console.error("Clipboard access restricted.");
+   return;
+ }
+
+navigator.clipboard.writeText(email).then(() => {
+ const message = "${t("footer.copiedToast")}";
+ let existingToast = document.getElementById('copy-toast');
+ if (existingToast) existingToast.remove();
+
+ const rect = clickedElement.getBoundingClientRect();
+ const toast = document.createElement('div');
+ toast.id = 'copy-toast';
+ toast.textContent = message;
+
+ toast.style.cssText = \`
+  position: fixed;
+  left: \${rect.left + rect.width / 2}px;
+  top: \${rect.bottom + 10}px;
+  transform: translateX(-50%);
+  background-color: black;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+ \`;
+
+ document.body.appendChild(toast);
+ setTimeout(() => {
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+ }, 10);
+
+ setTimeout(() => {
+  toast.style.opacity = '0';
+  toast.style.transform = 'translateX(-50%) translateY(-10px)';
+  setTimeout(() => toast.remove(), 300);
+ }, 2500);
+}).catch(err => {
+ console.error("Failed to copy email: ", err);
+});
+}).call(this, event)`;
 ---
 
 <main>
@@ -28,7 +87,8 @@ const about = lang === "fr" ? aboutFr : aboutEn;
         </p>
 
         <Button
-          href="#contact"
+          href={`mailto:${emailAddress}`}
+          onclick={copyEmailOnClick}
           class="mt-lg"
           data-umami-event="about-contact-button"
         >
