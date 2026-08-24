@@ -3,7 +3,7 @@
 # Images gérées uniquement dans src/content/projects/en/biomimicry.md — voir resolveImages.ts
 # (elles n'existent pas encore côté EN non plus ; à fournir avant publication (isDraft: false)).
 semanticSlug: "biomimicry-museum"
-title: "Biomimétisme — Expérience Éducative Interactive"
+title: "Biomimétisme : Expérience Éducative Interactive"
 client: "Muséum d'Histoire Naturelle, Nantes"
 description: "Biomimétisme et gamification pour introduire le concept de plantes pionnières."
 role: "Product Designer"

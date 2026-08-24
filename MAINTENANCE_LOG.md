@@ -6,6 +6,16 @@ Complète l'ACTION LOG historique du whitepaper (`Whitepaper d'architecture — 
 
 ---
 
+## 2026-08-24 (suite) — Retrait des tirets cadratins (—) du contenu du site
+
+### FAIT
+- `[2026-08-24]` — Sur demande du propriétaire (poursuite du nettoyage entamé sur la section Languages, `becfd92`) : tous les tirets cadratins restants dans le contenu affiché du site retirés, remplacés par la ponctuation standard adaptée au contexte (deux-points pour introduire une liste/précision, virgule pour une pause de phrase, `|` pour les titres composés — cohérent avec `ProjectLayout.astro` qui utilise déjà `|`) — statut : fait
+- `[2026-08-24]` — `src/i18n/ui.ts` — 6 chaînes (meta description accueil/à propos EN+FR, message 404 EN+FR) — statut : fait
+- `[2026-08-24]` — `src/pages/404.astro` — titre d'onglet `` `404 — ${t(...)}` `` → `` `404 | ${t(...)}` `` — statut : fait
+- `[2026-08-24]` — `src/content/projects/{en,fr}/biomimicry.md` — champ `title` (contenu appartenant au propriétaire, édition ponctuation uniquement sur demande explicite) — statut : fait
+- `[2026-08-24]` — `public/llms.txt` — titre H1 — statut : fait
+- Hors périmètre, volontairement non touché : commentaires de code (`.astro`/`.ts`/`.js`/`.css`, non rendus aux visiteurs) et commentaires YAML en tête des fichiers `.md` FR (`# Images gérées uniquement...`) — pas du contenu du site. Vérifié : `npm run build` passe, `grep -r "—" dist/ --include="*.html"` ne retourne plus aucun résultat.
+
 ## 2026-08-24 — Fix 404 `/fr/#projects` et `/fr/#contact` (liens navbar "Travaux"/"Contact")
 
 ### FAIT — bug routing FR

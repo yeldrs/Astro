@@ -8,7 +8,7 @@ import { useTranslations } from "../i18n/utils";
 // GitHub Pages serves a single 404.html for any unmatched path regardless of
 // locale prefix, so this page can't be locale-aware — it stays English.
 const t = useTranslations("en");
-const title = `404 — ${t("page404.title")}`;
+const title = `404 | ${t("page404.title")}`;
 ---
 
 <BaseLayout title={title} description={t("page404.body")}>

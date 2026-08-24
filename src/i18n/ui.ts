@@ -13,10 +13,10 @@ export const ui = {
       "Yassine El Idrissi UX Product design official website portfolio.",
     "meta.homeTitle": "Yassine El Idrissi - UX Product Designer",
     "meta.homeDescription":
-      "Portfolio of Yassine El Idrissi, UX Product Designer — selected case studies in product design, UX research and design systems.",
+      "Portfolio of Yassine El Idrissi, UX Product Designer: selected case studies in product design, UX research and design systems.",
     "meta.aboutTitle": "About Yassine El Idrissi - Product Designer",
     "meta.aboutDescription":
-      "About Yassine El Idrissi, UX Product Designer — experience, skills and background in end-to-end product design, from research to delivery.",
+      "About Yassine El Idrissi, UX Product Designer: experience, skills and background in end-to-end product design, from research to delivery.",
     "nav.work": "Work",
     "nav.about": "About",
     "nav.contact": "Contact",
@@ -63,7 +63,7 @@ export const ui = {
     "project.visualizationSecondary": "visualization secondary",
     "page404.title": "Page not found",
     "page404.body":
-      "Sorry — the page you're looking for doesn't exist or has been moved. Try returning to the homepage or browsing my case studies.",
+      "Sorry, the page you're looking for doesn't exist or has been moved. Try returning to the homepage or browsing my case studies.",
     "page404.goHome": "Go home",
   },
   fr: {
@@ -71,10 +71,10 @@ export const ui = {
       "Site portfolio officiel de Yassine El Idrissi, UX Product Designer.",
     "meta.homeTitle": "Yassine El Idrissi - UX Product Designer",
     "meta.homeDescription":
-      "Portfolio de Yassine El Idrissi, UX Product Designer — études de cas sélectionnées en design produit, recherche UX et design systems.",
+      "Portfolio de Yassine El Idrissi, UX Product Designer : études de cas sélectionnées en design produit, recherche UX et design systems.",
     "meta.aboutTitle": "À propos de Yassine El Idrissi - Product Designer",
     "meta.aboutDescription":
-      "À propos de Yassine El Idrissi, UX Product Designer — expérience, compétences et parcours en design produit de bout en bout, de la recherche à la livraison.",
+      "À propos de Yassine El Idrissi, UX Product Designer : expérience, compétences et parcours en design produit de bout en bout, de la recherche à la livraison.",
     "nav.work": "Projets",
     "nav.about": "À propos",
     "nav.contact": "Contact",
@@ -121,7 +121,7 @@ export const ui = {
     "project.visualizationSecondary": "visualisation secondaire",
     "page404.title": "Page introuvable",
     "page404.body":
-      "Désolé — la page que vous cherchez n'existe pas ou a été déplacée. Retournez à l'accueil ou parcourez mes études de cas.",
+      "Désolé, la page que vous cherchez n'existe pas ou a été déplacée. Retournez à l'accueil ou parcourez mes études de cas.",
     "page404.goHome": "Accueil",
   },
 } as const;

@@ -16,7 +16,7 @@ projectImages:
  - "/images/biomimicry/ar-interaction.webp" # Index 6: resultsImage (Main)
  - "" # Index 7: resultsImage2 (Optional)
 semanticSlug: "biomimicry-museum"
-title: "Biomimicry — Interactive Educational Experience"
+title: "Biomimicry: Interactive Educational Experience"
 client: "Museum of Natural History, Nantes"
 description: "Biomimicry and gamification to introduce the concept of pioneer plants."
 role: "Product Designer"
