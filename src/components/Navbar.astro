@@ -11,14 +11,20 @@ const otherLang: "en" | "fr" = lang === "en" ? "fr" : "en";
 
 const currentPath = cleanPathname(Astro.url.pathname);
 
-// Navigation links definition with IDs for tracking
+const homeHref = stripTrailingSlash(getRelativeLocaleUrl(lang, "/"));
+
+// Navigation links definition with IDs for tracking.
+// "/#projects" and "/#contact" are fragments on the homepage, not real routes — building
+// them off getRelativeLocaleUrl(lang, "/#projects") concatenates to "/fr/#projects", whose
+// path portion ("/fr/") 404s on GitHub Pages for the same reason homeHref needs
+// stripTrailingSlash (build.format:'file' never emits dist/fr/index.html). Reuse the
+// already-stripped homeHref instead.
 const navLinks = [
-  { name: t("nav.work"), href: getRelativeLocaleUrl(lang, "/#projects"), id: "work" },
+  { name: t("nav.work"), href: `${homeHref}#projects`, id: "work" },
   { name: t("nav.about"), href: getRelativeLocaleUrl(lang, "/about"), id: "about" },
-  { name: t("nav.contact"), href: getRelativeLocaleUrl(lang, "/#contact"), id: "contact" },
+  { name: t("nav.contact"), href: `${homeHref}#contact`, id: "contact" },
 ];
 
-const homeHref = stripTrailingSlash(getRelativeLocaleUrl(lang, "/"));
 const switcherHref = getLocalizedPath(currentPath, lang, otherLang);
 const isHome = stripLocalePrefix(currentPath, lang) === "/";
 

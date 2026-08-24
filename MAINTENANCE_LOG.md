@@ -6,6 +6,12 @@ Complète l'ACTION LOG historique du whitepaper (`Whitepaper d'architecture — 
 
 ---
 
+## 2026-08-24 — Fix 404 `/fr/#projects` et `/fr/#contact` (liens navbar "Travaux"/"Contact")
+
+### FAIT — bug routing FR
+- `[2026-08-24]` — Signalé par le propriétaire : en version FR, sur n'importe quelle page hors accueil, cliquer sur "Travaux" ou "Contact" dans la navbar renvoyait un 404. Même classe de bug que le fix `/fr/` du 2026-07-28 (suite 4), pas couverte à l'époque — `src/components/Navbar.astro` construisait ces deux liens via `getRelativeLocaleUrl(lang, "/#projects")` / `"/#contact"`, ce qui concatène en `/fr/#projects` : le fragment n'est jamais envoyé au serveur, seul le chemin `/fr/` l'est, et `build.format:'file'` ne génère jamais `dist/fr/index.html` (seulement `dist/fr.html`) — statut : fait
+- `[2026-08-24]` — `src/components/Navbar.astro` — `homeHref` (déjà passé par `stripTrailingSlash()`) déplacé avant la définition de `navLinks` et réutilisé pour construire `${homeHref}#projects` / `${homeHref}#contact` au lieu de repasser par `getRelativeLocaleUrl` — statut : fait, `npm run build` vérifié (`dist/fr/work/900care.html` : `href="/fr#projects"` et `href="/fr#contact"`, plus de slash avant le fragment ; EN inchangé, racine non préfixée)
+
 ## 2026-07-28 (suite 6) — Correction du vrai bug d'espacement mobile sous l'image de la project card
 
 ### FAIT
