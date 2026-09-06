@@ -84,9 +84,9 @@ const roleImage2 = projectImages[3] || "";
 const conceptionImage2 = projectImages[5] || "";
 const resultsImage2 = projectImages[7] || "";
 
-// The carousel now starts at index 8
+// The carousel now starts at index 8. It is also the only set the fullscreen
+// modal lets you page through — a standard section image opens on its own.
 const carouselImages = projectImages.slice(8);
-const allModalImages = projectImages;
 
 const teamMembers = data.credits?.team ?? [];
 const references = data.credits?.references ?? [];
@@ -97,8 +97,9 @@ const designConceptionList = copy.designConception?.listItems || [];
 const hasDesignConception =
   Boolean(copy.designConception?.paragraph?.trim()) || designConceptionList.length > 0;
 
-const tertiaryVariant = "tertiary";
-const disabledVariant = "disabled";
+// Both modal arrows render visible; the disabled-at-the-ends state is driven by
+// the `disabled` attribute + the `disabled:opacity-30` class, set from JS.
+const arrowVariant = "tertiary";
 ---
 
 <BaseLayout
@@ -392,7 +393,7 @@ const disabledVariant = "disabled";
         id="modalPrevBtn"
         label={t("modal.previous")}
         direction="left"
-        variant={disabledVariant as any}
+        variant={arrowVariant as any}
         onClick="window.navigateModal(-1)"
         class="absolute left-0 z-10 transition-opacity disabled:opacity-30 disabled:pointer-events-none"
       />
@@ -408,74 +409,52 @@ const disabledVariant = "disabled";
         id="modalNextBtn"
         label={t("modal.next")}
         direction="right"
-        variant={tertiaryVariant as any}
+        variant={arrowVariant as any}
         onClick="window.navigateModal(1)"
         class="absolute right-0 z-10 transition-opacity disabled:opacity-30 disabled:pointer-events-none"
       />
     </div>
   </div>
 
-  <script define:vars={{ images: allModalImages }} is:inline>
-    // --- Fix for JS Robustness ---
+  <script define:vars={{ carousel: carouselImages }} is:inline>
+    // The modal pages through the carousel images only. A standard section image
+    // opens on its own — index -1, no arrows, keyboard nav is a no-op.
+    const modalImages = Array.isArray(carousel) ? carousel : [];
 
-    // 1. Definition of global-scope (or pseudo-global) variables
-    const projectImages = images; // Use the variable passed by Astro
-    const TOTAL_MODAL_IMAGES = projectImages.length;
-
-    // Declare these variables on window for Astro SPA view transitions / navigation
     window.isModalOpen = false;
     window.isInitialized = false;
 
-    // 2. Define the functions on the Window object for immediate accessibility
-
     window.navigateModal = function (direction) {
       const modalImg = document.getElementById("modalImage");
-      if (!modalImg || TOTAL_MODAL_IMAGES <= 1 || !window.isModalOpen) return;
+      if (!modalImg || !window.isModalOpen) return;
 
-      let currentIndex = parseInt(modalImg.dataset.currentModalIndex) || 0;
-      let newIndex = currentIndex + direction;
+      const currentIndex = parseInt(modalImg.dataset.currentModalIndex);
+      if (isNaN(currentIndex) || currentIndex < 0) return; // not a carousel image
 
-      // STOP logic at the ends
-      if (newIndex >= TOTAL_MODAL_IMAGES || newIndex < 0) {
-        return;
-      }
+      const newIndex = currentIndex + direction;
+      if (newIndex < 0 || newIndex >= modalImages.length) return;
 
-      modalImg.src = projectImages[newIndex];
-      modalImg.dataset.currentModalIndex = newIndex.toString();
-
-      updateModalArrows(newIndex, TOTAL_MODAL_IMAGES);
+      modalImg.src = modalImages[newIndex];
+      modalImg.dataset.currentModalIndex = String(newIndex);
+      updateModalArrows(newIndex);
     };
 
     window.showImageModal = function (imageUrl) {
       const modal = document.getElementById("imageModal");
       const modalImg = document.getElementById("modalImage");
+      if (!modal || !modalImg || !imageUrl) return;
 
-      if (!modal || !modalImg || !imageUrl) return; // Stop if the elements are not there
+      if (window.isModalOpen) window.hideImageModal();
 
-      // New logic: If the modal is already open, hide it and retry to avoid state issues
-      if (window.isModalOpen) {
-        window.hideImageModal();
-      }
-
-      const initialIndex = projectImages.indexOf(imageUrl);
-      let initialModalIndex = initialIndex === -1 ? 0 : initialIndex;
-
+      const index = modalImages.indexOf(imageUrl); // -1 for a standalone image
       modalImg.src = imageUrl;
-      modalImg.dataset.currentModalIndex = initialModalIndex.toString();
+      modalImg.dataset.currentModalIndex = String(index);
 
-      // Show the modal (important to do before modifying the state)
       modal.classList.remove("hidden");
       modal.classList.add("flex");
       window.isModalOpen = true;
 
-      // Handle the display of the arrows
-      if (initialIndex !== -1 && TOTAL_MODAL_IMAGES > 1) {
-        updateModalArrows(initialModalIndex, TOTAL_MODAL_IMAGES);
-      } else {
-        // Hide all arrows (single image or non-navigable)
-        updateModalArrows(-1, 0);
-      }
-
+      updateModalArrows(index);
       modal.focus();
     };
 
@@ -488,30 +467,18 @@ const disabledVariant = "disabled";
       }
     };
 
-    // --- Internal helper function (Uses the CSS disabling classes) ---
-
-    function updateModalArrows(index, total) {
+    // index === -1 (standalone image) or a carousel of 0/1 → no arrows at all.
+    function updateModalArrows(index) {
       const prevBtn = document.getElementById("modalPrevBtn");
       const nextBtn = document.getElementById("modalNextBtn");
-
       if (!prevBtn || !nextBtn) return;
 
-      const hideAll = total <= 1 || index === -1;
+      const navigable = index >= 0 && modalImages.length > 1;
+      prevBtn.classList.toggle("hidden", !navigable);
+      nextBtn.classList.toggle("hidden", !navigable);
 
-      if (hideAll) {
-        prevBtn.classList.add("hidden");
-        nextBtn.classList.add("hidden");
-      } else {
-        prevBtn.classList.remove("hidden");
-        nextBtn.classList.remove("hidden");
-      }
-
-      // Handling the 'disabled' state
-      const isPrevDisabled = index <= 0;
-      prevBtn.disabled = isPrevDisabled;
-
-      const isNextDisabled = index >= total - 1;
-      nextBtn.disabled = isNextDisabled;
+      prevBtn.disabled = !navigable || index <= 0;
+      nextBtn.disabled = !navigable || index >= modalImages.length - 1;
     }
 
     function attachKeyboardHandler() {
@@ -539,10 +506,4 @@ const disabledVariant = "disabled";
     // We also attach on swap for Astro View Transitions
     document.addEventListener("astro:after-swap", attachKeyboardHandler);
   </script>
-
-  <style>
-    .prose {
-      max-width: none;
-    }
-  </style>
 </BaseLayout>
