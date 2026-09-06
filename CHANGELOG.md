@@ -82,6 +82,14 @@ Branch `refactor/structure-2026`. Audit → 6 phases. See the plan for the full 
   `concurrency: { group: pages }`, Node 22 (was 20). `.nvmrc` added.
 - `package.json` — `check` + `predeploy` scripts (added in Phase 2).
 
+### Fix — fullscreen image modal (pre-existing bug, found during review)
+- The modal was fed the flattened positional image array (with empty `""` slots), so
+  prev/next arrows showed on standalone section images and "navigating" hit a blank
+  `src`; the CDC carousel couldn't be paged backward. The modal now pages through
+  `data.images.carousel` only — a standard section image opens on its own (no arrows,
+  keyboard nav is a no-op). Both arrows render visible; disabled-at-the-ends is the
+  `disabled` attribute + `disabled:opacity-30`. Verified in-browser.
+
 ## 2026-08-24 — About CTA: copy email + mailto
 
 - `src/layouts/AboutLayout.astro` — the top "Let's connect" / "Discutons" button previously
