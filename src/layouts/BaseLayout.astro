@@ -6,12 +6,14 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import { defaultLang, ui } from "../i18n/ui";
+import { LOCALES } from "../i18n/locales";
 import { useTranslations, stripLocalePrefix, cleanPathname, stripTrailingSlash } from "../i18n/utils";
 
 export interface Props {
   title: string;
   description?: string;
   image?: string; // relative path used for og:image / twitter:image
+  imageAlt?: string; // alt text for the social preview image
   structuredData?: Record<string, unknown>; // extra JSON-LD injected in <head>
 }
 
@@ -21,7 +23,8 @@ const t = useTranslations(lang);
 const {
   title,
   description = t("meta.defaultDescription"),
-  image = "/images/profile-pic.webp",
+  image = "/images/og-default.jpg",
+  imageAlt = "Yassine El Idrissi, UX Product Designer",
   structuredData,
 } = Astro.props;
 
@@ -37,20 +40,12 @@ const ogImage = new URL(image, site).href;
 // hreflang alternates: strip the /fr prefix (if any) to get the locale-agnostic
 // path, then rebuild it for each configured locale.
 const pathWithoutLocale = stripLocalePrefix(cleanPath || "/", lang);
-const hreflangMap = {
-  en: "en-US",
-  fr: "fr-FR",
-} as const;
 const alternateLinks = (Object.keys(ui) as Array<keyof typeof ui>).map(
   (locale) => ({
-    hreflang: hreflangMap[locale],
+    hreflang: LOCALES[locale].bcp47,
     href: new URL(stripTrailingSlash(getRelativeLocaleUrl(locale, pathWithoutLocale)), site).href,
   }),
 );
-const ogLocaleMap = {
-  en: "en_US",
-  fr: "fr_FR",
-} as const;
 
 // Site-wide identity for search engines and AI agents
 const personLd = {
@@ -61,7 +56,7 @@ const personLd = {
   jobTitle: "UX Product Designer",
   sameAs: ["https://www.linkedin.com/in/yassineelidrissi/"],
   image: new URL("/images/profile-pic.webp", site).href,
-  inLanguage: lang === "fr" ? "fr-FR" : "en-US",
+  inLanguage: LOCALES[lang].bcp47,
 };
 ---
 
@@ -93,13 +88,15 @@ const personLd = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:locale" content={ogLocaleMap[lang]} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:locale" content={LOCALES[lang].ogLocale} />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={imageAlt} />
 
     <!-- Self-hosted fonts (see @font-face in global.css). No Google Fonts dependency. -->
     <link rel="preload" href="/fonts/manrope-latin-var.woff2" as="font" type="font/woff2" crossorigin />
@@ -110,6 +107,10 @@ const personLd = {
       data-website-id="52b0a573-2288-46c1-9e4f-a27cdae08238"></script>
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#4364e8" />
     <script>
       // Frustration-click detection: same bucket (element + ~40px radius) hit
       // repeatedly within a short window. Interactive elements (real links,
@@ -193,22 +194,6 @@ const personLd = {
         });
       })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/android-chrome-16x16.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="/android-chrome-32x32.png"
-    />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#4364e8" />
 
     <!-- Structured data: site-wide identity + optional per-page schema -->
     <script type="application/ld+json" set:html={JSON.stringify(personLd)} />

@@ -5,7 +5,10 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import BaseLayout from "./BaseLayout.astro";
 import Container from "../components/Container.astro";
 import ProjectCarousel from "../components/ProjectCarousel.astro";
+import ProjectSection from "../components/ProjectSection.astro";
+import ProjectFigure from "../components/ProjectFigure.astro";
 import ArrowButton from "../components/ArrowButton.astro";
+import { LOCALES } from "../i18n/locales";
 import { useTranslations, plainText } from "../i18n/utils";
 
 export interface Props {
@@ -15,17 +18,24 @@ export interface Props {
 
 const { project, lang } = Astro.props;
 const t = useTranslations(lang);
-const { Content } = await project.render();
 
-const plainTitle = plainText(project.data.title);
+// Shared, language-neutral data + the translated copy block for this locale.
+const data = project.data;
+const copy = lang === "fr" && data.fr ? data.fr : data.en;
+
+// Resolves an occasionally-localized credit string (see i18nString in config.ts).
+const creditRole = (role?: string | { en: string; fr: string }): string | undefined =>
+  typeof role === "string" || role === undefined ? role : role[lang];
+
+const plainTitle = plainText(copy.title);
 
 // context is optional and may be a bullet list (see keyInsights/metrics
 // pattern) — meta description and JSON-LD both require a flat string, so
 // collapse it here.
-const contextSummary = Array.isArray(project.data.context)
-  ? project.data.context.join(" ").replace(/<[^>]+>/g, "")
-  : (project.data.context ?? "").replace(/<[^>]+>/g, "");
-const metaDescription = project.data.description ?? contextSummary;
+const contextSummary = Array.isArray(copy.context)
+  ? copy.context.join(" ").replace(/<[^>]+>/g, "")
+  : (copy.context ?? "").replace(/<[^>]+>/g, "");
+const metaDescription = copy.description ?? contextSummary;
 
 // Per-project structured data (schema.org CreativeWork) for search engines / AI agents
 const seoBase = Astro.site ?? new URL("https://yassineelidrissi.com");
@@ -35,23 +45,35 @@ const projectLd = {
   name: plainTitle,
   headline: plainTitle,
   description: metaDescription,
-  url: new URL(getRelativeLocaleUrl(lang, `/work/${project.data.semanticSlug}`), seoBase).href,
-  image: new URL(project.data.cardImage, seoBase).href,
-  dateCreated: project.data.publishDate,
-  inLanguage: lang === "fr" ? "fr-FR" : "en-US",
+  url: new URL(getRelativeLocaleUrl(lang, `/work/${data.semanticSlug}`), seoBase).href,
+  image: new URL(data.cover, seoBase).href,
+  dateCreated: data.publishDate,
+  inLanguage: LOCALES[lang].bcp47,
   creator: {
     "@type": "Person",
     name: "Yassine El Idrissi",
     url: seoBase.href,
   },
-  about: project.data.client,
+  about: copy.client,
 };
 
 // --- Image logic ---
-const projectImages = project.data.projectImages || [];
+// Named images are flattened back to the positional layout the sections below expect:
+// [0/1] context · [2/3] role · [4/5] conception · [6/7] results · [8+] carousel.
+const projectImages = [
+  data.images.context.main,
+  data.images.context.secondary,
+  data.images.role.main,
+  data.images.role.secondary,
+  data.images.conception.main,
+  data.images.conception.secondary,
+  data.images.results.main,
+  data.images.results.secondary,
+  ...data.images.carousel,
+];
 
 // Main images (Index 0, 2, 4, 6)
-const contextImage = projectImages[0] || project.data.cardImage || "";
+const contextImage = projectImages[0] || data.cover || "";
 const roleImage = projectImages[2] || "";
 const conceptionImage = projectImages[4] || "";
 const resultsImage = projectImages[6] || "";
@@ -62,68 +84,40 @@ const roleImage2 = projectImages[3] || "";
 const conceptionImage2 = projectImages[5] || "";
 const resultsImage2 = projectImages[7] || "";
 
-// The carousel now starts at index 8
+// The carousel now starts at index 8. It is also the only set the fullscreen
+// modal lets you page through — a standard section image opens on its own.
 const carouselImages = projectImages.slice(8);
-const allModalImages = projectImages;
 
-// --- Type Narrowing for the optional fields ---
-// Using destructuring with a default value for robustness
-const teamMembers = project.data.teamMembers || [];
-const references = project.data.references || [];
-// Using optional chaining (?) to access listItems
-const designConceptionList = project.data.designConception?.listItems || [];
+const teamMembers = data.credits?.team ?? [];
+const references = data.credits?.references ?? [];
 
-// All section fields (context, problem, roleDescription, keyInsights,
-// methodology, delivery, metrics) are optional — hide a section's
-// heading/body entirely when its value is missing or empty.
-function hasContent(value?: string | string[]): boolean {
-  if (!value) return false;
-  if (Array.isArray(value)) return value.some((item) => item.trim() !== "");
-  return value.trim() !== "";
-}
-
-const hasContext = hasContent(project.data.context);
-const hasProblem = hasContent(project.data.problem);
-const hasRoleDescription = hasContent(project.data.roleDescription);
-const hasKeyInsights = hasContent(project.data.keyInsights);
-const hasMethodology = hasContent(project.data.methodology);
+// designConception has its own (paragraph + listItems) shape, so it stays inline
+// rather than going through <ProjectSection>. Every other section field does.
+const designConceptionList = copy.designConception?.listItems || [];
 const hasDesignConception =
-  Boolean(project.data.designConception?.paragraph?.trim()) || designConceptionList.length > 0;
-const hasDelivery = hasContent(project.data.delivery);
-const hasMetrics = hasContent(project.data.metrics);
+  Boolean(copy.designConception?.paragraph?.trim()) || designConceptionList.length > 0;
 
-// --- Design System (DS) classes for the Props (Arrow colors) ---
-const DS_CLASSES = {
-  mainDefault: "stroke-primary",
-  mainHover: "stroke-primary-hover",
-  tertiaryDefault: "stroke-tertiary",
-  tertiaryHover: "stroke-tertiary-hover",
-  disabledColor: "stroke-disabled",
-};
-
-const tertiaryVariant = "tertiary";
-const disabledVariant = "disabled";
+// Both modal arrows render visible; the disabled-at-the-ends state is driven by
+// the `disabled` attribute + the `disabled:opacity-30` class, set from JS.
+const arrowVariant = "tertiary";
 ---
 
 <BaseLayout
   title={`${t("project.titlePrefix")} | ${plainTitle}`}
   description={metaDescription}
-  image={project.data.cardImage}
+  image={data.cover}
+  imageAlt={plainTitle}
   structuredData={projectLd}
 >
   <Container>
-    <main class="py-3xl max-w-content mx-auto space-y-3xl">
+    <div class="py-3xl max-w-content mx-auto space-y-3xl">
       <h1
         class="h-display"
-        set:html={project.data.title}
+        set:html={copy.title}
       />
 
-      <div class="prose prose-lg dark:prose-invert">
-        <Content />
-      </div>
-
       <section
-        id={`${project.data.semanticSlug}-diagnosis`}
+        id={`${data.semanticSlug}-diagnosis`}
         role="region"
         aria-label={t("project.diagnosis")}
         class="space-y-3xl"
@@ -133,171 +127,46 @@ const disabledVariant = "disabled";
         </h2>
 
         <article
-          id={`${project.data.semanticSlug}-context-problem`}
+          id={`${data.semanticSlug}-context-problem`}
           role="article"
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
           <div class="space-y-md">
-            {
-              hasContext && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.context")}
-                  </h3>
-                  {Array.isArray(project.data.context) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.context.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={project.data.context}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
-
-            {
-              hasProblem && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.problem")}
-                  </h3>
-                  {Array.isArray(project.data.problem) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.problem.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={project.data.problem}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
+            <ProjectSection title={t("project.context")} value={copy.context} />
+            <ProjectSection title={t("project.problem")} value={copy.problem} />
           </div>
 
           <div class="space-y-md">
-            {
-              contextImage && (
-                <div
-                  onclick={`showImageModal('${contextImage}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={contextImage}
-                    alt={`${t("project.context")} ${t("project.visualization")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
-            {
-              contextImage2 && (
-                <div
-                  onclick={`showImageModal('${contextImage2}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={contextImage2}
-                    alt={`${t("project.context")} ${t("project.visualizationSecondary")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
+            <ProjectFigure
+              src={contextImage}
+              alt={`${t("project.context")} ${t("project.visualization")}`}
+            />
+            <ProjectFigure
+              src={contextImage2}
+              alt={`${t("project.context")} ${t("project.visualizationSecondary")}`}
+            />
           </div>
         </article>
 
         <article
-          id={`${project.data.semanticSlug}-role-insights`}
+          id={`${data.semanticSlug}-role-insights`}
           role="article"
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
           <div class="space-y-md">
-            {
-              hasRoleDescription && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.role")}
-                  </h3>
-                  {Array.isArray(project.data.roleDescription) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.roleDescription.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={project.data.roleDescription}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
-            {
-              hasKeyInsights && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.keyInsights")}
-                  </h3>
-                  {Array.isArray(project.data.keyInsights) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.keyInsights.map((insight) => (
-                        <li set:html={insight} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <div
-                      set:html={project.data.keyInsights}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
+            <ProjectSection title={t("project.role")} value={copy.roleDescription} />
+            <ProjectSection title={t("project.keyInsights")} value={copy.keyInsights} />
           </div>
 
           <div class="space-y-md">
-            {
-              roleImage && (
-                <div
-                  onclick={`showImageModal('${roleImage}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={roleImage}
-                    alt={`${t("project.role")} ${t("project.visualization")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
-            {
-              roleImage2 && (
-                <div
-                  onclick={`showImageModal('${roleImage2}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={roleImage2}
-                    alt={`${t("project.role")} ${t("project.visualizationSecondary")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
+            <ProjectFigure
+              src={roleImage}
+              alt={`${t("project.role")} ${t("project.visualization")}`}
+            />
+            <ProjectFigure
+              src={roleImage2}
+              alt={`${t("project.role")} ${t("project.visualizationSecondary")}`}
+            />
           </div>
         </article>
       </section>
@@ -305,7 +174,7 @@ const disabledVariant = "disabled";
       <ProjectCarousel images={carouselImages} hideArrowsOnMobile={true} lang={lang} />
 
       <section
-        id={`${project.data.semanticSlug}-conception`}
+        id={`${data.semanticSlug}-conception`}
         role="region"
         aria-label={t("project.conception")}
         class="space-y-3xl"
@@ -320,27 +189,7 @@ const disabledVariant = "disabled";
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
           <div class="space-y-md">
-            {
-              hasMethodology && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.methodology")}
-                  </h3>
-                  {Array.isArray(project.data.methodology) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.methodology.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={project.data.methodology}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
+            <ProjectSection title={t("project.methodology")} value={copy.methodology} />
 
             {
               hasDesignConception && (
@@ -348,9 +197,9 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.designConception")}
                   </h3>
-                  {project.data.designConception?.paragraph && (
+                  {copy.designConception?.paragraph && (
                     <div
-                      set:html={project.data.designConception.paragraph}
+                      set:html={copy.designConception.paragraph}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -367,42 +216,20 @@ const disabledVariant = "disabled";
           </div>
 
           <div class="space-y-md">
-            {
-              conceptionImage && (
-                <div
-                  onclick={`showImageModal('${conceptionImage}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={conceptionImage}
-                    alt={`${t("project.conception")} ${t("project.visualization")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
-            {
-              conceptionImage2 && (
-                <div
-                  onclick={`showImageModal('${conceptionImage2}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={conceptionImage2}
-                    alt={`${t("project.conception")} ${t("project.visualizationSecondary")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
+            <ProjectFigure
+              src={conceptionImage}
+              alt={`${t("project.conception")} ${t("project.visualization")}`}
+            />
+            <ProjectFigure
+              src={conceptionImage2}
+              alt={`${t("project.conception")} ${t("project.visualizationSecondary")}`}
+            />
           </div>
         </article>
       </section>
 
       <section
-        id={`${project.data.semanticSlug}-results`}
+        id={`${data.semanticSlug}-results`}
         role="region"
         aria-label={t("project.results")}
         class="space-y-3xl"
@@ -412,87 +239,24 @@ const disabledVariant = "disabled";
         </h2>
 
         <article
-          id={`${project.data.semanticSlug}-results-main`}
+          id={`${data.semanticSlug}-results-main`}
           role="article"
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
           <div class="space-y-md">
-            {
-              hasDelivery && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.delivery")}
-                  </h3>
-                  {Array.isArray(project.data.delivery) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.delivery.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={project.data.delivery}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
-
-            {
-              hasMetrics && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.metrics")}
-                  </h3>
-                  {Array.isArray(project.data.metrics) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.metrics.map((metric) => (
-                        <li set:html={metric} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <div
-                      set:html={project.data.metrics}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
+            <ProjectSection title={t("project.delivery")} value={copy.delivery} />
+            <ProjectSection title={t("project.metrics")} value={copy.metrics} />
           </div>
 
           <div class="space-y-md">
-            {
-              resultsImage && (
-                <div
-                  onclick={`showImageModal('${resultsImage}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={resultsImage}
-                    alt={`${t("project.results")} ${t("project.visualization")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
-            {
-              resultsImage2 && (
-                <div
-                  onclick={`showImageModal('${resultsImage2}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={resultsImage2}
-                    alt={`${t("project.results")} ${t("project.visualizationSecondary")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
+            <ProjectFigure
+              src={resultsImage}
+              alt={`${t("project.results")} ${t("project.visualization")}`}
+            />
+            <ProjectFigure
+              src={resultsImage2}
+              alt={`${t("project.results")} ${t("project.visualizationSecondary")}`}
+            />
           </div>
         </article>
       </section>
@@ -502,11 +266,11 @@ const disabledVariant = "disabled";
       {/* ---------------------------------------------------- */}
 
       {
-        (project.data.clientDetails?.name ||
+        (data.credits?.client ||
           teamMembers.length > 0 ||
           references.length > 0) && (
           <section
-            id={`${project.data.semanticSlug}-credits`}
+            id={`${data.semanticSlug}-credits`}
             role="contentinfo"
             aria-label={t("project.credits")}
             class="space-y-sm text-text-body-secondary mt-3xl border-t border-border-secondary pt-3xl"
@@ -546,7 +310,7 @@ const disabledVariant = "disabled";
                         >
                           {member.name}
                         </a>
-                        {member.role && <span>, {member.role}</span>}
+                        {creditRole(member.role) && <span>, {creditRole(member.role)}</span>}
                         {index < teamMembers.length - 2
                           ? ", "
                           : index === teamMembers.length - 2
@@ -558,17 +322,17 @@ const disabledVariant = "disabled";
                 </p>
               )}
 
-              {/* Line 2: Client (Displays if clientDetails exists AND if the client name exists) */}
-              {project.data.clientDetails?.name && (
+              {/* Line 2: Client (shown when credits.client is set; name = the localized client) */}
+              {data.credits?.client && (
                 <p>
                   <strong>{t("project.client")} :</strong>{" "}
                   <a
-                    href={project.data.clientDetails.link || "#"}
+                    href={data.credits.client.link || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link"
                   >
-                    {project.data.clientDetails.name}
+                    {copy.client}
                   </a>
                   .
                 </p>
@@ -590,7 +354,7 @@ const disabledVariant = "disabled";
                         >
                           {ref.name}
                         </a>
-                        {ref.role && <span>, {ref.role}</span>}
+                        {creditRole(ref.role) && <span>, {creditRole(ref.role)}</span>}
                         {index < references.length - 1 ? " | " : ""}
                       </span>
                     );
@@ -601,7 +365,7 @@ const disabledVariant = "disabled";
           </section>
         )
       }
-    </main>
+    </div>
   </Container>
 
   <div
@@ -629,10 +393,9 @@ const disabledVariant = "disabled";
         id="modalPrevBtn"
         label={t("modal.previous")}
         direction="left"
-        variant={disabledVariant as any}
+        variant={arrowVariant as any}
         onClick="window.navigateModal(-1)"
         class="absolute left-0 z-10 transition-opacity disabled:opacity-30 disabled:pointer-events-none"
-        {...DS_CLASSES}
       />
 
       <img
@@ -646,75 +409,52 @@ const disabledVariant = "disabled";
         id="modalNextBtn"
         label={t("modal.next")}
         direction="right"
-        variant={tertiaryVariant as any}
+        variant={arrowVariant as any}
         onClick="window.navigateModal(1)"
         class="absolute right-0 z-10 transition-opacity disabled:opacity-30 disabled:pointer-events-none"
-        {...DS_CLASSES}
       />
     </div>
   </div>
 
-  <script define:vars={{ images: allModalImages }} is:inline>
-    // --- Fix for JS Robustness ---
+  <script define:vars={{ carousel: carouselImages }} is:inline>
+    // The modal pages through the carousel images only. A standard section image
+    // opens on its own — index -1, no arrows, keyboard nav is a no-op.
+    const modalImages = Array.isArray(carousel) ? carousel : [];
 
-    // 1. Definition of global-scope (or pseudo-global) variables
-    const projectImages = images; // Use the variable passed by Astro
-    const TOTAL_MODAL_IMAGES = projectImages.length;
-
-    // Declare these variables on window for Astro SPA view transitions / navigation
     window.isModalOpen = false;
     window.isInitialized = false;
 
-    // 2. Define the functions on the Window object for immediate accessibility
-
     window.navigateModal = function (direction) {
       const modalImg = document.getElementById("modalImage");
-      if (!modalImg || TOTAL_MODAL_IMAGES <= 1 || !window.isModalOpen) return;
+      if (!modalImg || !window.isModalOpen) return;
 
-      let currentIndex = parseInt(modalImg.dataset.currentModalIndex) || 0;
-      let newIndex = currentIndex + direction;
+      const currentIndex = parseInt(modalImg.dataset.currentModalIndex);
+      if (isNaN(currentIndex) || currentIndex < 0) return; // not a carousel image
 
-      // STOP logic at the ends
-      if (newIndex >= TOTAL_MODAL_IMAGES || newIndex < 0) {
-        return;
-      }
+      const newIndex = currentIndex + direction;
+      if (newIndex < 0 || newIndex >= modalImages.length) return;
 
-      modalImg.src = projectImages[newIndex];
-      modalImg.dataset.currentModalIndex = newIndex.toString();
-
-      updateModalArrows(newIndex, TOTAL_MODAL_IMAGES);
+      modalImg.src = modalImages[newIndex];
+      modalImg.dataset.currentModalIndex = String(newIndex);
+      updateModalArrows(newIndex);
     };
 
     window.showImageModal = function (imageUrl) {
       const modal = document.getElementById("imageModal");
       const modalImg = document.getElementById("modalImage");
+      if (!modal || !modalImg || !imageUrl) return;
 
-      if (!modal || !modalImg || !imageUrl) return; // Stop if the elements are not there
+      if (window.isModalOpen) window.hideImageModal();
 
-      // New logic: If the modal is already open, hide it and retry to avoid state issues
-      if (window.isModalOpen) {
-        window.hideImageModal();
-      }
-
-      const initialIndex = projectImages.indexOf(imageUrl);
-      let initialModalIndex = initialIndex === -1 ? 0 : initialIndex;
-
+      const index = modalImages.indexOf(imageUrl); // -1 for a standalone image
       modalImg.src = imageUrl;
-      modalImg.dataset.currentModalIndex = initialModalIndex.toString();
+      modalImg.dataset.currentModalIndex = String(index);
 
-      // Show the modal (important to do before modifying the state)
       modal.classList.remove("hidden");
       modal.classList.add("flex");
       window.isModalOpen = true;
 
-      // Handle the display of the arrows
-      if (initialIndex !== -1 && TOTAL_MODAL_IMAGES > 1) {
-        updateModalArrows(initialModalIndex, TOTAL_MODAL_IMAGES);
-      } else {
-        // Hide all arrows (single image or non-navigable)
-        updateModalArrows(-1, 0);
-      }
-
+      updateModalArrows(index);
       modal.focus();
     };
 
@@ -727,30 +467,18 @@ const disabledVariant = "disabled";
       }
     };
 
-    // --- Internal helper function (Uses the CSS disabling classes) ---
-
-    function updateModalArrows(index, total) {
+    // index === -1 (standalone image) or a carousel of 0/1 → no arrows at all.
+    function updateModalArrows(index) {
       const prevBtn = document.getElementById("modalPrevBtn");
       const nextBtn = document.getElementById("modalNextBtn");
-
       if (!prevBtn || !nextBtn) return;
 
-      const hideAll = total <= 1 || index === -1;
+      const navigable = index >= 0 && modalImages.length > 1;
+      prevBtn.classList.toggle("hidden", !navigable);
+      nextBtn.classList.toggle("hidden", !navigable);
 
-      if (hideAll) {
-        prevBtn.classList.add("hidden");
-        nextBtn.classList.add("hidden");
-      } else {
-        prevBtn.classList.remove("hidden");
-        nextBtn.classList.remove("hidden");
-      }
-
-      // Handling the 'disabled' state
-      const isPrevDisabled = index <= 0;
-      prevBtn.disabled = isPrevDisabled;
-
-      const isNextDisabled = index >= total - 1;
-      nextBtn.disabled = isNextDisabled;
+      prevBtn.disabled = !navigable || index <= 0;
+      nextBtn.disabled = !navigable || index >= modalImages.length - 1;
     }
 
     function attachKeyboardHandler() {
@@ -778,10 +506,4 @@ const disabledVariant = "disabled";
     // We also attach on swap for Astro View Transitions
     document.addEventListener("astro:after-swap", attachKeyboardHandler);
   </script>
-
-  <style>
-    .prose {
-      max-width: none;
-    }
-  </style>
 </BaseLayout>

@@ -1,0 +1,62 @@
+semanticSlug: "900care"
+publishDate: "2024-10-25"
+isDraft: false
+cover: /images/coverProject-900care.webp
+images:
+  context:
+    main: /images/project-1/mockupDesktop.webp
+    secondary: ""
+  role:
+    main: /images/project-1/research.webp
+    secondary: ""
+  conception:
+    main: /images/project-1/conception.webp
+    secondary: ""
+  results:
+    main: /images/project-1/metricsHomepage.webp
+    secondary: ""
+  carousel: []
+credits:
+  client:
+    link: https://900.care/
+  team: []
+  references:
+    - name: Pierre Raccaglia
+      link: https://fr.linkedin.com/in/praccaglia
+      role: Product Manager
+en:
+  title: UX & growth for a sustainable e&#8209;commerce
+  client: 900.care
+  description: Full-cycle product design at 900.care, focused on improving first-order conversion and long term retention.
+  role: UX research and Product design
+  roleDescription: As a product designer, I was responsible for the entire cycle, from user research to the delivery of the final mockups, working closely with the Product Manager to define the objectives and deploy solutions with the developers team.
+  context: 900.care is a D2C startup with a subscription-based business model for homecare and hygiene products. Its profitability strongly depends on the value of the first order to encourage retention and offset the customer acquisition cost. The homepage and sales funnel were major friction points, not converting visitors efficiently enough and not sufficiently encouraging product range discovery.
+  problem: How to design a user journey to stabilize conversion rate above 5% and increase the average order value (AOV), all while reinforcing the brand's value proposition?
+  keyInsights:
+    - Data analysis (Metabase, Datadog) revealed underperformance in the product discoverability.
+    - Qualitative interviews (27 conducted) confirmed cognitive overload, counter-intuitive navigation and an overly extended sales funnel.
+    - The fundamental issue was therefore linked to the site's complexity and lack of smart functionalities.
+  methodology: I adopted a data-informed approach. Each design decision was based on a hypothesis derived from user research (qualitative and quantitative). My process included journey mapping (UX mapping), prototyping on Figma, and regular user testing. Collaboration with the product manager and developers through sprint planning was essential for quick deliveries.
+  delivery: We successfully launched the new upsell flow, revamped the homepage, the product catalog and implemented a new section to manage incoming orders. The delivery included fully documented designs, interactive prototypes, an advanced design system update, user insights and research protocol.
+  metrics:
+    - +47% increase in Average Basket Value (ABV) following the sales funnel redesign and upsell integration.
+    - Overall conversion rate increased from 5.4% to 5.9%.
+    - Retention rate stabilized above 70%.
+fr:
+  title: Croissance e&#8209;commerce via modèle d'abonnement
+  client: 900.care
+  description: Design produit end-to-end chez 900.care, avec l'objectif d'améliorer la conversion du site, et la rétention long terme.
+  role: UX Research et Product Design
+  roleDescription: En tant que product designer, j'ai piloté l'ensemble du cycle de conception, de la recherche utilisateur jusqu'aux maquettes finales. En collaboration avec le Product Manager et l'équipe de développement, nous avons défini les objectifs, déployé les fonctionnalités puis mesuré leur impact.
+  context: "900.care est une startup D2C avec un modèle d'abonnement spécialisée dans la vente de produits d'hygiène et d'entretien. Son chiffre d'affaires dépend fortement de la valeur de la première commande. Le défi devient alors de favoriser la rétention et compenser le coût d'acquisition client (CAC). La page d'accueil et le tunnel de vente étaient les principaux points de friction : le taux de conversion était bas et la découverte du catalogue produit n'était pas suffisamment mise en avant."
+  problem: Comment concevoir un parcours utilisateur capable de stabiliser le taux de conversion au-dessus de 5%, augmenter le panier moyen (AOV) et le taux de rétention, tout en renforçant la proposition de valeur de la marque ?
+  keyInsights:
+    - Les 27 entretiens qualitatifs menés ont confirmé une surcharge cognitive, une navigation contre-intuitive et un tunnel de vente trop complexe.
+    - L'analyse des sessions utilisateur (Metabase, Datadog) a révélé l'inefficacité de la navigation sur le catalogue produit et dans le portail client.
+    - Le problème de fond tenait donc à la complexité du site, à la fluidité du parcours utilisateur et au manque de fonctionnalités intelligentes.
+  methodology: "J'ai adopté une approche basée sur l'analyse de données : chaque hypothèse de design est issue de la recherche utilisateur (qualitative et quantitative). J'ai cartographié le parcours utilisateur (UX mapping), conçu les prototypes sur Figma et effectué des tests utilisateurs réguliers. La collaboration avec le Product Manager et les développeurs via des sprints a été essentielle pour livrer rapidement."
+  delivery: Déploiement d'un nouveau parcours d'upsell / cross-sell (livrés en MVPs puis itérés post-lancement). Création d'un nouvel espace de gestion de commandes, refonte complète de la page d'accueil, du catalogue produit, du portail client ainsi que du flux de désabonnement pour réduire le churn. Les livrables incluaient des maquettes entièrement documentées, des prototypes interactifs, une refonte poussée du design system, ainsi que les insights et protocoles de recherche associés.
+  metrics:
+    - +47 % de panier moyen suite à la refonte du funnel de vente et à l'intégration de l'upsell.
+    - Augmentation du taux de conversion global de 5,4 % à 5,9 %.
+    - Taux de rétention stabilisé à >70 %.

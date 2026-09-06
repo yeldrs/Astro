@@ -7,7 +7,6 @@ import Container from "../components/Container.astro";
 import Hero from "../components/Hero.astro";
 import Cloud from "../components/Cloud.astro";
 import { useTranslations, plainText } from "../i18n/utils";
-import { withResolvedImages } from "../content/resolveImages";
 import { home as homeEn } from "../data/home.en";
 import { home as homeFr } from "../data/home.fr";
 
@@ -21,18 +20,19 @@ const home = lang === "fr" ? homeFr : homeEn;
 
 const PlaceholderImage = "/images/profile-pic.webp";
 
-const everyProject = await getCollection("projects");
-const allProjects = everyProject
-  .filter(({ slug, data }) => slug.startsWith(`${lang}/`) && data.isDraft !== true)
-  .map((project) => withResolvedImages(project, everyProject))
-  .sort((a, b) => {
-    const dateA = new Date(a.data.publishDate).getTime();
-    const dateB = new Date(b.data.publishDate).getTime();
-    return dateB - dateA;
-  });
+const allProjects = (await getCollection("projects"))
+  .filter(({ data }) => data.isDraft !== true && (lang === "en" || data.fr != null))
+  .map((project) => ({
+    ...project,
+    copy: lang === "fr" && project.data.fr ? project.data.fr : project.data.en,
+  }))
+  .sort(
+    (a, b) =>
+      new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime(),
+  );
 ---
 
-<main class="relative">
+<div class="relative">
   <Cloud
     variant="large"
     shade={300}
@@ -115,13 +115,14 @@ const allProjects = everyProject
         allProjects.map((project, index) => (
           <ProjectCard
             id={project.data.semanticSlug}
-            headline={project.data.title}
-            client={project.data.client}
-            description={project.data.description}
-            role={project.data.role}
+            headline={project.copy.title}
+            client={project.copy.client}
+            description={project.copy.description}
+            role={project.copy.role}
             projectLink={getRelativeLocaleUrl(lang, `/work/${project.data.semanticSlug}`)}
-            imageAlt={t("home.projectPreviewAlt", { title: plainText(project.data.title) })}
-            imageUrl={project.data.cardImage}
+            umamiSlug={project.data.semanticSlug}
+            imageAlt={t("home.projectPreviewAlt", { title: plainText(project.copy.title) })}
+            imageUrl={project.data.cover}
             direction={index % 2 === 0 ? "reverse" : "default"}
             lang={lang}
           />
@@ -129,4 +130,4 @@ const allProjects = everyProject
       }
     </section>
   </Container>
-</main>
+</div>

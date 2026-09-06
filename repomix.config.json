@@ -15,7 +15,9 @@
       "public/*.svg",
       "public/manifest.json",
       "*.webp",
-      "whitepaper.txt"
+      "ARCHITECTURE.md",
+      "CHANGELOG.md",
+      "docs/archive/**"
     ]
   }
 }

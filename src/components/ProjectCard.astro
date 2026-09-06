@@ -9,6 +9,7 @@ export interface Props {
   description?: string;
   role: string;
   projectLink: string;
+  umamiSlug: string;
   imageAlt: string;
   imageUrl: string;
   direction?: "default" | "reverse";
@@ -22,6 +23,7 @@ const {
   description,
   role,
   projectLink,
+  umamiSlug,
   imageAlt,
   imageUrl,
   direction = "default",
@@ -32,13 +34,8 @@ const {
 const t = useTranslations(lang);
 const plainHeadline = plainText(headline);
 
-// --- SHARED TRACKING LOGIC ---
-
-// Format for Umami (kebab-case: 900-care)
-const projectSlugUmami = client
-  .toLowerCase()
-  .replace(/\s+/g, "-")
-  .replace(/[^\w-]/g, "");
+// Stable Umami tracking key — the project's semanticSlug, not a derived label.
+const projectSlugUmami = umamiSlug;
 
 const directionClass = direction === "reverse" ? "md:flex-row-reverse" : "";
 ---

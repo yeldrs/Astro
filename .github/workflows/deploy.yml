@@ -11,21 +11,39 @@ permissions:
   pages: write
   id-token: write
 
+# Never run two deploys at once; let an in-progress one finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Non-blocking for now — flip to a hard gate once the tree is consistently clean.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout your repository
         uses: actions/checkout@v5
-        
+
       - name: Install, build, and upload your site
-        uses: withastro/action@v5 
+        uses: withastro/action@v5
         with:
-          node-version: 20 
-          build-cmd: npm run build 
-          
-      # The 'withastro/action' uploads the 'github-pages' artifact
-      
+          node-version: 22
+          build-cmd: npm run build
+
+      # withastro/action uploads the 'github-pages' artifact automatically.
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -38,4 +56,3 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           artifact_name: github-pages
-          # 🚨 FIX: removed the 'path' line

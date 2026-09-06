@@ -1,0 +1,33 @@
+---
+// src/components/ProjectFigure.astro
+// A case-study image that opens the fullscreen modal on click or keyboard.
+// Renders nothing when src is empty. showImageModal() is defined by the inline
+// script in ProjectLayout.astro.
+
+export interface Props {
+  src: string;
+  alt: string;
+}
+
+const { src, alt } = Astro.props;
+---
+
+{
+  src && (
+    <div
+      role="button"
+      tabindex="0"
+      aria-label={alt}
+      onclick={`showImageModal('${src}')`}
+      onkeydown={`if(event.key==='Enter'||event.key===' '){event.preventDefault();showImageModal('${src}')}`}
+      class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
+    >
+      <img
+        src={src}
+        alt={alt}
+        class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
+        loading="lazy"
+      />
+    </div>
+  )
+}

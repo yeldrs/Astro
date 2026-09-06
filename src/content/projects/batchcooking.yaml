@@ -1,0 +1,70 @@
+semanticSlug: "batchcooking"
+publishDate: "2020-05-20"
+isDraft: false
+cover: /images/coverProject-batchcooking.webp
+images:
+  context:
+    main: /images/project-3/brainstorm.webp
+    secondary: ""
+  role:
+    main: /images/project-3/diagram.webp
+    secondary: /images/project-3/wireframeBatchcooking.webp
+  conception:
+    main: ""
+    secondary: /images/project-3/mockupBatchcooking.webp
+  results:
+    main: /images/project-3/coverProject-batchcooking.webp
+    secondary: ""
+  carousel: []
+credits:
+  team:
+    - name: Yannick Zelle
+      link: https://github.com/Lazel102
+      role:
+        en: Data Scientist, backend developer
+        fr: Data Scientist, backend developper
+  references: []
+en:
+  title: Building an accessible solution for collaborative cooking
+  client: Personal social innovation project
+  description: Designing a marketplace to explore student food insecurity and social isolation by turning underutilized kitchens into collaborative learning spaces.
+  role: Product designer
+  roleDescription: Partnering with a Data Scientist, I drove the discovery phase, from primary user research and physical proof of concept to low-fidelity prototyping. My job was to ensure the user experience came first, and that our project evolved toward an economic model serving genuine human connection.
+  context: "The project was based on our direct observation in major cities like Paris: student food insecurity and the underutilization of existing spaces. Students lack adequate space, resources, tools, organization, and knowledge to cook healthy, diversified meals. Our vision was to transform unused kitchens into low-cost hubs for social exchange and practical culinary learning."
+  problem: How can a digital service provide students in major cities with the necessary resources to foster healthy, consistent food habits? Thereby transforming a logistic constraint into a social opportunity?
+  keyInsights:
+    - "Initial research identified the barriers to student autonomy: not just cost and space, but critical deficits in organization, nutrition and cooking knowledge."
+    - The service's value proposition is social engagement and learning. Users seemed highly motivated by the chance to meet, share culture, and learn new cooking skills.
+    - The matching algorithm must be human-centered, prioritizing affinities like shared values, desire to teach/learn, and of course food habits.
+  methodology: I adopted a terrain-validated approach. The project prioritized a non-digital Proof of Concept (PoC) before any interface development, to ensure the core concept was viable. This saved development resources and focused the MVP scope.
+  delivery: Thanks to the user research synthesis, we validated the core frictions, starting with the lack of trust between strangers. Once field testing confirmed a basic user journey, we built the Figma prototype and worked toward a local MVP.
+  metrics:
+    - "Adoption target: 200 new user sign-ups within the first 3 months post-launch."
+    - "Trust target: maintain a profile completion rate of 80% or higher, reflecting user investment in the trust-building mechanisms."
+    - "Match rate target: exceed a 60% Host & Cook match rate within the first 3 months, validating the accuracy of the affinity-based algorithm."
+    - "Social value target: 75% of users reporting a new cooking skill or organizational method learned after their first session, validating the pedagogical component."
+  designConception:
+    paragraph: |
+      We used the validated user journey and insights from the physical PoC to define the essential functionalities and logic of the first digital prototype. A key strategic decision was transforming the basic Host Profile into a Social Trust Passport, prioritizing features that convey safety and community feedback over simple listing details. To ensure a high adoption rate, we formalized the matching criteria (age, distance, food preferences, quantity) which served as the technical specifications for the Data Scientist to optimize the recommendation algorithm. Additionally, I built this first prototype as an MVP to ensure future testing and iterations.
+fr:
+  title: Un service collaboratif pour cuisiner en groupe
+  client: Projet personnel
+  description: Concevoir un service pour lutter contre la précarité alimentaire étudiante et l'isolement social, en transformant des cuisines sous-utilisées en espaces d'apprentissage collaboratifs.
+  role: Product designer
+  roleDescription: "En binôme avec un Data Scientist, j'ai piloté la phase de discovery et conception UX : recherche utilisateur, preuve de concept physique et prototypage basse-fidélité. Mon rôle était de garantir que l'expérience utilisateur reste prioritaire, et que le projet évolue vers un modèle économique au service d'un lien social réel."
+  context: "Le projet est parti d'un constat de terrain dans les grandes villes comme Paris : la précarité alimentaire étudiante et la sous-utilisation des espaces existants. Les étudiants manquent d'espace, de ressources, d'outils, d'organisation et de connaissances pour cuisiner de manière saine tout en optimisant leur temps. Notre vision fut de transformer des cuisines inutilisées en hubs d'apprentissage culinaire low-cost."
+  problem: Comment un service digital peut-il donner aux étudiants les ressources nécessaires pour adopter des habitudes alimentaires saines et durables ? Et ainsi transformer une contrainte logistique en opportunité sociale.
+  keyInsights:
+    - "La recherche initiale a mis en évidence les freins à l'autonomie des étudiants : au-delà du coût et de l'espace, de vrais manques en organisation, en connaissances nutritionnelles et en compétences culinaires."
+    - La proposition de valeur repose sur l'engagement social et l'apprentissage. Les testeurs se sont montrés très motivés à l'idée de rencontrer d'autres personnes, partager leurs connaissances et apprendre de nouvelles techniques de cuisine.
+    - L'algorithme de mise en relation devait rester centré sur les préférences personnelles, en priorisant des affinités comme les valeurs partagées, l'envie d'apprendre ou de transmettre, et bien sûr les habitudes alimentaires.
+  methodology: "Nous avons priorisé une approche terrain avant l'écran : une preuve de concept (PoC) non-digitale a permis de valider le concept avant tout développement d'interface. Cela a évité de mobiliser des ressources de développement et cadré le périmètre du futur MVP."
+  delivery: Grâce à la synthèse de la recherche utilisateur, nous avons validé les frictions principales, à commencer par le manque de confiance entre inconnus. Une fois le parcours utilisateur de base confirmé via les tests terrain, on a construit un prototype Figma puis développé un MVP local.
+  metrics:
+    - "Cible d'adoption définie : 200 nouvelles inscriptions dans les 3 premiers mois post-lancement."
+    - "Cible de confiance définie : taux de complétion de profil de 80% ou plus."
+    - "Cible de matching définie : taux de mise en relation hôte/cuisinier supérieur à 60% dans les 3 premiers mois."
+    - "Cible de valeur sociale définie : 75% des utilisateurs déclarant avoir appris une compétence culinaire ou méthode d'organisation après leur première session."
+  designConception:
+    paragraph: |
+      Les observations et les retours issus des ateliers de test nous ont permis de définir les premières fonctionnalités et la logique du prototype de base. Par exemple, une décision stratégique a été de transformer le simple profil d'hôte en un "Passeport de Confiance Social", en priorisant les éléments rassurants tels que les retours de la communauté plutôt que les informations d'annonces génériques. Pour encourager un bon taux d'adoption, un algorithme de matching formalise des critères tels que l'âge, la distance ou les préférences alimentaires pour optimiser les recommandations.

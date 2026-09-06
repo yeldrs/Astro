@@ -1,0 +1,37 @@
+---
+// src/components/ProjectSection.astro
+// One labelled case-study section: a heading + either a paragraph or a bulleted
+// list, depending on whether the value is a string or a string[]. Renders
+// nothing when the value is missing or empty.
+
+export interface Props {
+  title: string;
+  value?: string | string[];
+}
+
+const { title, value } = Astro.props;
+
+const items = Array.isArray(value) ? value.filter((s) => s.trim() !== "") : [];
+const text = typeof value === "string" ? value.trim() : "";
+const show = items.length > 0 || text !== "";
+---
+
+{
+  show && (
+    <div class="space-y-sm">
+      <h3 class="text-lg font-semibold text-text-body-secondary">{title}</h3>
+      {items.length > 0 ? (
+        <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
+          {items.map((item) => (
+            <li set:html={item} />
+          ))}
+        </ul>
+      ) : (
+        <p
+          set:html={text}
+          class="text-base text-text-body-primary leading-relaxed text-left"
+        />
+      )}
+    </div>
+  )
+}

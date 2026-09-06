@@ -1,69 +1,89 @@
 // src/content/config.ts
+//
+// One YAML file per case study: src/content/projects/<name>.yaml
+//   - shared, language-neutral fields at the top level (slug, date, images, credits)
+//   - translated copy under `en:` / `fr:` blocks (same shape)
+//   - `fr` absent  ⇒  no /fr/work/<slug> page is generated (not a bug)
+// The Zod schema is the contract: a file that fails it fails the build.
 
 import { defineCollection, z } from "astro:content";
 
-const projectCollection = defineCollection({
- type: "content",
- schema: z.object({
-  semanticSlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'The semantic slug must be lowercase, without spaces, and use hyphens (kebab-case).'),
+// A section field: a paragraph, or a bulleted list. ProjectLayout hides the
+// section entirely when the value is missing or empty.
+const section = z.union([z.string(), z.array(z.string())]).optional();
+
+// A string that is normally language-neutral but occasionally differs per locale.
+const i18nString = z.union([z.string(), z.object({ en: z.string(), fr: z.string() })]);
+
+// Main + optional secondary image for one case-study section.
+const figure = z
+  .object({
+    main: z.string().default(""),
+    secondary: z.string().default(""),
+  })
+  .default({});
+
+const localeContent = z.object({
   title: z.string(),
   client: z.string(),
   description: z.string().optional(),
   role: z.string(),
-  // Section fields below are optional — ProjectLayout.astro hides each
-  // section's heading/body when its value is missing or empty.
-  roleDescription: z.union([z.string(), z.array(z.string())]).optional(),
-  context: z.union([z.string(), z.array(z.string())]).optional(),
-  problem: z.union([z.string(), z.array(z.string())]).optional(),
-  keyInsights: z.union([z.string(), z.array(z.string())]).optional(),
-  methodology: z.union([z.string(), z.array(z.string())]).optional(),
+  roleDescription: section,
+  context: section,
+  problem: section,
+  keyInsights: section,
+  methodology: section,
   designConception: z
-   .object({
-    paragraph: z.string().optional(),
-    listItems: z.array(z.string()).optional(),
-   })
-   .optional(),
-  delivery: z.union([z.string(), z.array(z.string())]).optional(),
-  metrics: z.union([z.string(), z.array(z.string())]).optional(),
-  // Images are declared once, in the en/ entry. Other locales omit both fields
-  // entirely and inherit them at build time (see src/content/resolveImages.ts) —
-  // this keeps image edits to a single file regardless of how many languages exist.
-  cardImage: z.string().optional(),
-  projectImages: z.array(z.string()).min(1).optional(),
-  publishDate: z.string(),
-  isDraft: z.boolean().default(false),
-
-  // NEW DYNAMIC FIELDS FOR CREDITS
-
-  clientDetails: z
-   .object({
-    name: z.string().optional(), // 🎯 MADE OPTIONAL
-    link: z.string().url().optional(), // 🎯 MADE OPTIONAL
-   })
-   .optional(),
-
-  teamMembers: z
-   .array(
-    z.object({
-     name: z.string().optional(), // 🎯 MADE OPTIONAL
-     link: z.string().url().optional(), // 🎯 MADE OPTIONAL
-          role: z.string().optional(), // 🎯 MADE OPTIONAL (for the comma)
-    }),
-   )
-   .optional(),
-
-  references: z
-   .array(
-    z.object({
-     name: z.string().optional(), // 🎯 MADE OPTIONAL
-     link: z.string().url().optional(), // 🎯 MADE OPTIONAL
-     role: z.string().optional(),
-    }),
-   )
-   .optional(),
- }),
+    .object({
+      paragraph: z.string().optional(),
+      listItems: z.array(z.string()).optional(),
+    })
+    .optional(),
+  delivery: section,
+  metrics: section,
 });
 
-export const collections = {
- projects: projectCollection,
-};
+const creditEntry = z.object({
+  name: z.string().optional(),
+  link: z.string().url().optional(),
+  role: i18nString.optional(),
+});
+
+const projects = defineCollection({
+  type: "data",
+  schema: z.object({
+    semanticSlug: z
+      .string()
+      .regex(
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+        "semanticSlug must be kebab-case (lowercase, digits, hyphens).",
+      ),
+    publishDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "publishDate must be an ISO date (YYYY-MM-DD)."),
+    isDraft: z.boolean().default(false),
+
+    cover: z.string(),
+    images: z.object({
+      context: figure,
+      role: figure,
+      conception: figure,
+      results: figure,
+      carousel: z.array(z.string()).default([]),
+    }),
+
+    credits: z
+      .object({
+        // Displayed name comes from `<locale>.client`; only the link lives here.
+        client: z.object({ link: z.string().url().optional() }).optional(),
+        team: z.array(creditEntry).default([]),
+        references: z.array(creditEntry).default([]),
+      })
+      .default({}),
+
+    en: localeContent,
+    fr: localeContent.optional(),
+  }),
+});
+
+export const collections = { projects };

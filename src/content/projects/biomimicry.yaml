@@ -1,0 +1,65 @@
+semanticSlug: "biomimicry-museum"
+publishDate: "2022-02-15"
+isDraft: true
+cover: /images/coverProject-biomimicry.webp
+images:
+  context:
+    main: /images/biomimicry/museum-context.webp
+    secondary: ""
+  role:
+    main: /images/biomimicry/user-research-kids.webp
+    secondary: ""
+  conception:
+    main: /images/biomimicry/physical-prototype.webp
+    secondary: ""
+  results:
+    main: /images/biomimicry/ar-interaction.webp
+    secondary: ""
+  carousel: []
+credits:
+  client:
+    link: https://museum.nantesmetropole.fr/
+  team:
+    - name: Yingjun Zhao
+      link: https://www.behance.net/joyingjun
+    - name: Loïc Prevost
+      link: https://www.linkedin.com/in/lo%C3%AFc-prevost-32b822197/
+    - name: Aman Srivastava
+      link: http://amansrivastava.design/index
+  references: []
+en:
+  title: "Biomimicry: Interactive Educational Experience"
+  client: Museum of Natural History, Nantes
+  description: Biomimicry and gamification to introduce the concept of pioneer plants.
+  role: Product Designer
+  roleDescription: I co-led the project from scientific mediation to physical production. My focus was on UX strategy and product prototyping using woodworking and laser engraving.
+  context: The Museum of Natural History of Nantes needed to help visitors visualize the principle of local 'pioneer plants'. The challenge was to translate a complex biological process into a 5-minute interactive experience for a multi-generational audience.
+  problem: How to make the complex biology of pioneer plants intuitive for children while staying scientifically accurate for adults in a high-traffic museum?
+  keyInsights:
+    - "Technical Risk: Standard Web-AR proved unstable on 60% of visitors' older devices, risking high frustration."
+    - "Audience Data: 40% of users were children under 13, requiring a playful experience with zero-instruction interface."
+    - "Cognitive Load: to attract visitors and inplement the concept into our physical environment, a physical 'anchor' was needed before adding the digital AR layer."
+  methodology: " Working in a team of four, we collaborated with a biology specialist to translate scientific field data into a functional product. I led the 3D modeling and engineered the wooden totem stand as the primary physical touchpoint, while my teammates managed the AR integration with a developer. Together, we conducted live user testing and on-site deployment for 100+ visitors."
+  delivery: A fully functional interactive installation delivered to the Museum. The package included the physical structure (wood & laser-engraved), the AR software layer, and a post-event report detailing visitor engagement patterns and hardware maintenance protocols.
+  metrics: Successfully engaged 100+ visitors in 2 days. Implemented a critical UX update overnight after Day 1. Maintained 0% technical downtime when switching to dedicated hardware.
+  designConception:
+    paragraph: |
+      To mitigate technical failure, we pivoted the strategy from 'bring your own device' to a dedicated hardware station. I engineered a robust wooden installation that acted as the AR trigger, ensuring 100% uptime.
+fr:
+  title: "Biomimétisme : Expérience Éducative Interactive"
+  client: Muséum d'Histoire Naturelle, Nantes
+  description: Biomimétisme et gamification pour introduire le concept de plantes pionnières.
+  role: Product Designer
+  roleDescription: J'ai co-piloté le projet, de la médiation scientifique jusqu'à la production physique. Je me suis concentré sur la stratégie UX et le prototypage produit, en utilisant le travail du bois et la gravure laser.
+  context: Le Muséum d'Histoire Naturelle de Nantes avait besoin d'aider les visiteurs à visualiser le principe des 'plantes pionnières' locales. Le défi consistait à traduire un processus biologique complexe en une expérience interactive de 5 minutes, pour un public multi-générationnel.
+  problem: Comment rendre la biologie complexe des plantes pionnières intuitive pour les enfants, tout en restant scientifiquement rigoureuse pour les adultes, dans un musée à fort passage ?
+  keyInsights:
+    - "Risque technique : la Web-AR standard s'est révélée instable sur 60% des appareils plus anciens des visiteurs, avec un risque élevé de frustration."
+    - "Données d'audience : 40% des utilisateurs étaient des enfants de moins de 13 ans, nécessitant une expérience ludique avec une interface sans instructions."
+    - "Charge cognitive : pour attirer les visiteurs et implémenter le concept dans notre environnement physique, un 'ancrage' physique était nécessaire avant d'ajouter la couche digitale AR."
+  methodology: " En équipe de quatre, nous avons collaboré avec un spécialiste en biologie pour traduire des données scientifiques de terrain en un produit fonctionnel. J'ai dirigé la modélisation 3D et conçu le totem en bois comme point de contact physique principal, pendant que mes coéquipiers géraient l'intégration AR avec un développeur. Ensemble, nous avons mené des tests utilisateurs en direct et un déploiement sur site auprès de plus de 100 visiteurs."
+  delivery: Une installation interactive pleinement fonctionnelle livrée au Muséum. Le package incluait la structure physique (bois et gravure laser), la couche logicielle AR, et un rapport post-événement détaillant les schémas d'engagement des visiteurs ainsi que le protocole de maintenance matérielle.
+  metrics: Plus de 100 visiteurs engagés en 2 jours. Mise en place d'une mise à jour UX critique du jour au lendemain après le Jour 1. Maintien de 0% de temps d'arrêt technique lors du passage à la station matérielle dédiée.
+  designConception:
+    paragraph: |
+      Pour limiter le risque d'échec technique, nous avons pivoté d'une stratégie 'apportez votre propre appareil' vers une station matérielle dédiée. J'ai conçu une installation en bois robuste servant de déclencheur AR, garantissant 100% de disponibilité.

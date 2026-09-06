@@ -4,17 +4,14 @@ import { getCollection } from "astro:content";
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 
 export async function getStaticPaths() {
-  const projects = await getCollection(
-    "projects",
-    ({ slug, data }) => slug.startsWith("en/") && data.isDraft !== true,
-  );
+  const projects = await getCollection("projects", ({ data }) => data.isDraft !== true);
   return projects.map((project) => ({
     params: { slug: project.data.semanticSlug },
-    props: { project },
+    props: { project, lang: "en" as const },
   }));
 }
 
-const { project } = Astro.props;
+const { project, lang } = Astro.props;
 ---
 
-<ProjectLayout project={project} lang="en" />
+<ProjectLayout project={project} lang={lang} />

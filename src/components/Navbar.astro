@@ -3,6 +3,7 @@ import Container from "./Container.astro";
 import FlagIcon from "./icons/FlagIcon.astro";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { defaultLang } from "../i18n/ui";
+import { LOCALES } from "../i18n/locales";
 import { useTranslations, getLocalizedPath, stripLocalePrefix, cleanPathname, stripTrailingSlash } from "../i18n/utils";
 
 const lang: "en" | "fr" = Astro.currentLocale === "fr" ? "fr" : defaultLang;
@@ -28,12 +29,8 @@ const navLinks = [
 const switcherHref = getLocalizedPath(currentPath, lang, otherLang);
 const isHome = stripLocalePrefix(currentPath, lang) === "/";
 
-const LANG_META = {
-  en: { label: "EN" },
-  fr: { label: "FR" },
-} as const;
-const currentLangMeta = LANG_META[lang];
-const otherLangMeta = LANG_META[otherLang];
+const currentLangMeta = LOCALES[lang];
+const otherLangMeta = LOCALES[otherLang];
 
 // Extract the page name for tracking (e.g.: "home", "about", "900care")
 const pageName = isHome ? "home" : currentPath.split("/").filter(Boolean).pop();

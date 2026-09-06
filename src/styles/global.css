@@ -1,4 +1,4 @@
-/* src/styles/global.css (Final Fix) */
+/* src/styles/global.css */
 
 /* SELF-HOSTED FONTS (latin subset, variable fonts) — replace Google Fonts.
    Covers EN + FR (Latin-1 accents). For Central European text, add a latin-ext file. */
@@ -45,18 +45,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Example of a component styled via tokens */
 @layer components {
-  .btn {
-    /* FIX: Using full semantic classes */
-    @apply bg-background-primary text-white px-md py-sm rounded-md font-medium;
-  }
-.h-display {
+  .h-display {
     @apply font-serif text-4xl font-semibold text-text-body-primary;
-  }
-  .btn-outline {
-    /* FIX: Using full semantic classes */
-    @apply border border-background-primary text-text-body-primary bg-transparent;
   }
   .link {
     @apply underline text-text-link hover:text-text-link-hover transition-colors;
