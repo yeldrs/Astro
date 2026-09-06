@@ -41,9 +41,6 @@ Format: `- [ ] <area> — <what> — <why> (<severity>)`
 
 ## Tooling / infra
 
-- [ ] **Before merging `refactor/structure-2026`:** delete `scripts/migrate-projects.mjs` and
-      `docs/_migration-source/` (one-shot migration + preserved source `.md`, kept for review
-      only). (blocker for merge)
 - [ ] `.github/workflows/deploy.yml` — the `check` job is `continue-on-error: true`. Flip it
       to a hard gate once the tree stays `astro check`-clean. (low)
 - [ ] `npm audit` — advisories in transitive dev deps (tailwind/postcss chain). Review after
