@@ -41,8 +41,13 @@ Format: `- [ ] <area> — <what> — <why> (<severity>)`
 
 ## Tooling / infra
 
-- [ ] `npm audit` — 20 advisories (mostly transitive dev deps via tailwind/postcss chain).
-      Review after any dependency bump. (low)
+- [ ] **Before merging `refactor/structure-2026`:** delete `scripts/migrate-projects.mjs` and
+      `docs/_migration-source/` (one-shot migration + preserved source `.md`, kept for review
+      only). (blocker for merge)
+- [ ] `.github/workflows/deploy.yml` — the `check` job is `continue-on-error: true`. Flip it
+      to a hard gate once the tree stays `astro check`-clean. (low)
+- [ ] `npm audit` — advisories in transitive dev deps (tailwind/postcss chain). Review after
+      any dependency bump. (low)
 - [ ] Optional: a `Stop` hook running `astro check` (Windows/PowerShell — verify it's robust
       before adding). (idea)
 

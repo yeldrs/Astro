@@ -23,6 +23,9 @@ Published case studies: 900.care, Caisse des Dépôts, Batchcooking. Draft: biom
 3. Deeper architecture rationale → `ARCHITECTURE.md`, on demand.
 4. Exact content contract → `src/content/config.ts` (the Zod schema is the authority).
 
+Common tasks have a step-by-step skill in `.claude/skills/`: `add-case-study`,
+`translate-content`, `predeploy-check`.
+
 ## Layer map — pick the layer before touching code
 
 | I want to change… | Edit |

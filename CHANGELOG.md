@@ -59,7 +59,28 @@ Branch `refactor/structure-2026`. Audit → 6 phases. See the plan for the full 
   byte-identical to baseline; image placement / carousel / credits / JSON-LD spot-checked.
 - Pre-existing content divergences carried over verbatim, logged in `BACKLOG.md`.
 
-<!-- Phases 3–5 entries appended here as they land. -->
+### Phase 3 — ProjectLayout section/figure extraction
+- `ProjectLayout.astro` 787 → 558 lines. New `ProjectSection.astro` (heading +
+  paragraph/bulleted-list, hidden when empty) replaces the ~7×-repeated section block; new
+  `ProjectFigure.astro` (clickable modal image) replaces the ~8×-repeated image block **and**
+  adds keyboard access (`role="button"`, `tabindex="0"`, Enter/Space) the bare `<div onclick>`
+  lacked. `designConception` stays inline (own shape). No visual change (text byte-identical).
+
+### Phase 4 — dedup + token-chain gaps
+- `src/i18n/locales.ts` (new): `LOCALES` = per-locale `{ bcp47, ogLocale, label }`. Replaces
+  the locale→BCP-47 map that was duplicated across `BaseLayout` (hreflang, `og:locale`,
+  JSON-LD), `ProjectLayout` and `Navbar`. Dead `languages` export removed from `ui.ts`.
+- `ArrowButton.astro` — dropped 5 required-but-ignored colour props; removed the matching
+  `DS_CLASSES` consts + spreads from `ProjectCarousel` / `ProjectLayout`. Output unchanged.
+- `tailwind.config.mjs` — `colors.gray` and `fontSize.xs` wired from `tokens.js`. Only
+  `gray-50/200/600` are used; 50/200 identical, `gray-600` hover shifts `#4b5563`→`#4a5565`
+  (matches the semantic text tokens). `text-xs` unchanged.
+
+### Phase 5 — skills + CI
+- `.claude/skills/`: `add-case-study`, `translate-content`, `predeploy-check`.
+- `.github/workflows/deploy.yml` — added a non-blocking `check` job (`astro check`),
+  `concurrency: { group: pages }`, Node 22 (was 20). `.nvmrc` added.
+- `package.json` — `check` + `predeploy` scripts (added in Phase 2).
 
 ## 2026-08-24 — About CTA: copy email + mailto
 
