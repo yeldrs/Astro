@@ -29,6 +29,13 @@ Format: `- [ ] <area> — <what> — <why> (<severity>)`
 - [ ] `src/components/Hero.astro` — profile `<img>` is commented out; `profile-pic.webp` is
       only used as JSON-LD / `personLd` image. Decide: show it, or drop the asset. (low)
 
+## Architecture
+
+- [ ] `src/data/{home,about}.*.ts` stay plain TS (not YAML data collections like the case
+      studies). Owner decision 2026-09 — do **not** re-propose migrating them.
+- [ ] Layout wrapping is inconsistent: `ProjectLayout` self-wraps in `BaseLayout`, but
+      `HomeLayout` / `AboutLayout` are wrapped by their page. Pick one. (low — tidy)
+
 ## Design system
 
 - [ ] `text-md` — used in `Button.astro`, `Footer.astro`, `HomeLayout.astro`, `404.astro`.
