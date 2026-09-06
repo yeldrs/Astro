@@ -29,7 +29,37 @@ Branch `refactor/structure-2026`. Audit → 6 phases. See the plan for the full 
   root `CNAME`, debug comments in `deploy.yml` / `astro.config.mjs`.
 - Verified: `npm run build` green; rendered page text byte-identical to pre-change baseline.
 
-<!-- Phases 1–5 entries appended here as they land. -->
+### Phase 1 — documentation split
+- 4 overlapping docs (~23k tokens) → `CLAUDE.md` (rewritten, ~1.6k tokens) + `BACKLOG.md`
+  (new, open items) + `CHANGELOG.md` (new, this file) + `ARCHITECTURE.md` (new, on-demand).
+  `README.md` trimmed. `whitepaper.txt` + `MAINTENANCE_LOG.md` deleted (history condensed here,
+  pre-August archived to `docs/archive/`).
+
+### Phase 2 — content model: one file per case study
+- `src/content/projects/{en,fr}/<name>.md` (2 files, frontmatter-only, positional image array)
+  → `src/content/projects/<name>.yaml` (1 file, `type: "data"`). Shared fields
+  (`semanticSlug`, `publishDate`, `isDraft`, `cover`, `images`, `credits`) at the top level;
+  translated copy under `en:` / `fr:` blocks.
+- Images: positional `projectImages` array → named `images.{context,role,conception,results}`
+  `{ main, secondary }` + `images.carousel[]`. `src/content/resolveImages.ts` deleted (images
+  are shared now, no cross-file inheritance).
+- `src/content/config.ts` — schema rewritten; `publishDate` now regex-validated `YYYY-MM-DD`.
+- `src/pages/work/[slug].astro` + `fr/…` — `getStaticPaths` filters by `isDraft` (+ `data.fr`
+  for FR) and passes `lang`; both read the same entry.
+- `ProjectLayout.astro` — reads `copy` (the locale block), `data.images`, `data.credits`;
+  flattens `images` back to the positional array the section markup expects; `project.render()`
+  / `<Content />` removed (no Markdown bodies).
+- `HomeLayout.astro` — filters/maps the collection to the locale block; `ProjectCard` gets a
+  stable `umamiSlug` (the `semanticSlug`) instead of a label derived from `client`.
+- Removed `@astrojs/mdx` (done in Phase 0). Added `@astrojs/check` + `typescript` + `npm run
+  check` / `predeploy` scripts.
+- Migration by `scripts/migrate-projects.mjs` (verbatim string copy). Source `.md` preserved
+  under `docs/_migration-source/` for review — **both are deleted before merge**.
+- Verified: `npm run build` green, `astro check` 0 errors, rendered page text on all 10 routes
+  byte-identical to baseline; image placement / carousel / credits / JSON-LD spot-checked.
+- Pre-existing content divergences carried over verbatim, logged in `BACKLOG.md`.
+
+<!-- Phases 3–5 entries appended here as they land. -->
 
 ## 2026-08-24 — About CTA: copy email + mailto
 

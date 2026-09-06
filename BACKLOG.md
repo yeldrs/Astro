@@ -7,13 +7,14 @@ Format: `- [ ] <area> — <what> — <why> (<severity>)`
 
 ## Content — owner decision needed
 
-- [ ] `src/content/projects/{en,fr}/caissedesdepots.md` — `methodology` and `delivery` are a
-      plain string in `en/` but a `string[]` in `fr/`, so the same project renders differently
-      per locale. Pick one shape for both. (low — cosmetic)
-- [ ] `src/content/projects/{en,fr}/900care.md` — `keyInsights` list items are in a different
-      order EN vs FR. Align if intentional parity is wanted. (low)
-- [ ] `src/content/projects/fr/batchcooking.md` — `role` reads "developper" (vs "developer" in
-      `en/`). Typo in owner copy — fix only on owner confirmation. (low)
+- [ ] `src/content/projects/caissedesdepots.yaml` — `en.methodology` / `en.delivery` are a
+      plain string but `fr.methodology` / `fr.delivery` are a `string[]`, so the same project
+      renders differently per locale. Pick one shape for both. (low — cosmetic)
+- [ ] `src/content/projects/900care.yaml` — `keyInsights` list items are in a different order
+      in `en` vs `fr`. Align if intentional parity is wanted. (low)
+- [ ] `src/content/projects/batchcooking.yaml` — `credits.team[0].role` is `{ en: "…developer",
+      fr: "…developper" }` — the FR is a typo carried over verbatim from the old content. Fix
+      to one shared string on owner confirmation. (low)
 - [ ] `src/data/about.fr.ts` — "Significant Work" section is an unverified EN→FR translation,
       never checked against the real CV (flagged in the file header). Owner to review. (low)
 - [ ] `src/data/about.en.ts` vs `about.fr.ts` — intentionally out of sync (FR rebuilt from a

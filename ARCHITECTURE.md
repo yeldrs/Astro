@@ -25,7 +25,7 @@ Bilingual: English at the root (unprefixed), French under `/fr/`. Three publishe
 | Layer | Tech | Role |
 |---|---|---|
 | Framework | Astro `^5` | Static generation, routing, components |
-| Content | Content Collections (`type: "content"`, `.md`) | Case studies = typed frontmatter |
+| Content | Content Collections (`type: "data"`, one `.yaml` per case study) | Zod-validated |
 | Styles | Tailwind CSS `^3` via `@astrojs/tailwind` | Utilities driven by design tokens |
 | Design tokens | `src/styles/tokens.js` (plain JS) | Single source of truth for colour/space/type |
 | Build CSS | PostCSS + autoprefixer | Tailwind compilation |
@@ -42,17 +42,18 @@ Astro's file-based routing. `build.format: 'file'` → emits `/about.html`, not
 src/pages/index.astro            → /
 src/pages/about.astro            → /about
 src/pages/404.astro              → 404 (one page, English only — GitHub Pages serves a single 404.html)
-src/pages/work/[slug].astro      → /work/<semanticSlug>   (EN case studies)
+src/pages/work/[slug].astro      → /work/<semanticSlug>    (passes lang="en")
 src/pages/fr/index.astro         → /fr
 src/pages/fr/about.astro         → /fr/about
-src/pages/fr/work/[slug].astro   → /fr/work/<semanticSlug> (FR case studies)
+src/pages/fr/work/[slug].astro   → /fr/work/<semanticSlug> (passes lang="fr"; only projects with an fr: block)
 ```
 
 ### Why a real file per locale
 Astro's native `i18n` (`defaultLocale: 'en'`, `locales: ['en','fr']`,
 `prefixDefaultLocale: false`) keeps English unprefixed at the root. Astro has **no built-in
 way** to share one `[locale]` route file while leaving the default locale unprefixed, so each
-route exists twice: `work/[slug].astro` + `fr/work/[slug].astro`. They must stay in sync.
+route exists twice: `work/[slug].astro` + `fr/work/[slug].astro`. Both read the same project
+files; each just passes a different `lang` to `ProjectLayout`, which picks the `en`/`fr` block.
 
 ### The `build.format: 'file'` trap
 No `dist/fr/index.html` is ever emitted (only `dist/fr.html`). So any generated URL that hits
@@ -71,40 +72,38 @@ a mirrored `/fr/*` entry.
 ## 4. The core mechanism: Content Collections + getStaticPaths
 
 ```
-.md frontmatter → validated by src/content/config.ts (Zod) → read by getStaticPaths()
-  in work/[slug].astro (or fr/…) → images resolved via resolveImages.ts → HTML page
+<name>.yaml → validated by src/content/config.ts (Zod) → read by getStaticPaths()
+  in work/[slug].astro (and fr/…) → ProjectLayout picks the en/fr block → HTML page
 ```
 
-If a `.md` file fails the schema, **the build fails** — the only guardrail against publishing
-a malformed case study. `semanticSlug` becomes the URL segment and is identical across
-locales, so there's no slug translation table to maintain.
+If a `.yaml` file fails the schema, **the build fails** — the only guardrail against publishing
+a malformed case study. `semanticSlug` becomes the URL segment.
 
-- **EN route**: `getCollection("projects", ({slug}) => slug.startsWith("en/"))`, filters
-  drafts, passes the entry straight through (it already has its images).
-- **FR route**: gets the full collection, filters `fr/` + non-draft, runs `withResolvedImages`
-  to inherit images from the `en/` sibling, then renders.
-- No `fr/*.md` for a project ⇒ no `/fr/work/...` page. Expected, not a bug.
+- **One file per project.** Shared, language-neutral data (`semanticSlug`, `publishDate`,
+  `isDraft`, `cover`, `images`, `credits`) at the top level; translated copy under `en:` and
+  `fr:` blocks of the same shape.
+- **EN route**: `getCollection("projects", ({data}) => !data.isDraft)`, `lang: "en"`.
+- **FR route**: same, plus `data.fr != null`, `lang: "fr"`.
+- No `fr:` block ⇒ no `/fr/work/...` page. Expected, not a bug.
+- `ProjectLayout` does `const copy = lang === "fr" && data.fr ? data.fr : data.en` and reads
+  every text field from `copy`, images from `data.images`, credits from `data.credits`.
 
-### Image single-source convention
-`cardImage` and `projectImages` are authored **once**, in the `en/*.md` entry, and are
-optional in the schema so `fr/*.md` omits them. `src/content/resolveImages.ts`
-(`withResolvedImages`) fills them in for any entry missing them by looking up the `en/` entry
-with the same `semanticSlug`, at build. Editing an image = editing the `en/` file only.
-
-### `projectImages` positional index
-Positions are semantic, not sequential. Never reorder or compact; keep empty `""` slots:
-
+### Images — named, one place
+```yaml
+images:
+  context:    { main, secondary }   # secondary is the optional second image
+  role:       { main, secondary }
+  conception: { main, secondary }
+  results:    { main, secondary }
+  carousel:   [ … ]
 ```
-0 / 1  → context  (main / optional secondary)
-2 / 3  → role
-4 / 5  → conception
-6 / 7  → results
-8+     → carousel
-```
+`ProjectLayout` flattens this back to the positional array (`[0/1] context`, `[2/3] role`, …,
+`[8+] carousel`) that the section markup and the modal expect. That internal array is an
+implementation detail — the authored shape is the named object above.
 
-`ProjectLayout.astro` reads these exact positions. A shift breaks the layout **with no build
-error** — the single most dangerous edit for a non-developer. A keyed object is the intended
-future shape (see `BACKLOG.md` / the restructuring plan).
+### A credit role that differs per locale
+`credits.team[].role` and `credits.references[].role` are normally one shared string, but
+accept `{ en, fr }` for the rare case where the wording genuinely differs.
 
 ### Section fields
 `context`, `problem`, `roleDescription`, `keyInsights`, `methodology`, `designConception`,
@@ -154,7 +153,7 @@ src/components/  → shared UI atoms (Container, Button, ArrowButton, Navbar, Fo
                   ProjectCard, ProjectCarousel, Cloud, …). Check importers before editing.
 src/data/       → home/about content, one file per locale.
 src/i18n/       → ui.ts (strings) + utils.ts (helpers).
-src/content/    → config.ts (schema), resolveImages.ts, projects/{en,fr}/*.md.
+src/content/    → config.ts (schema), projects/<name>.yaml (one per case study).
 src/styles/     → tokens.js, global.css.
 ```
 
@@ -217,9 +216,9 @@ nothing to copy per page, pass props.
 
 ## 10. Adding a case study
 
-Drop a `.md` in `src/content/projects/en/` (frontmatter + images). Add the `fr/` counterpart
-when the translation is ready — same `semanticSlug`, **no image fields**. Put images in
-`public/images/<project>/`. `npm run build` — if it passes, the project is live on the home
+Create `src/content/projects/<name>.yaml` (copy an existing one as a template). Fill the
+shared fields + the `en:` block; add the `fr:` block when the translation is ready. Put images
+in `public/images/<project>/`. `npm run build` — if it passes, the project is live on the home
 and at `/work/<semanticSlug>`. Zero route files to touch. (A guided procedure lives in the
 `add-case-study` skill.)
 

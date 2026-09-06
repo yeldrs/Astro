@@ -1,0 +1,102 @@
+semanticSlug: "depostetconsignations"
+publishDate: "2022-05-15"
+isDraft: false
+cover: /images/coverProject-cdc.webp
+images:
+  context:
+    main: /images/project-2/conceptBrief.webp
+    secondary: ""
+  role:
+    main: /images/project-2/crazy8.webp
+    secondary: ""
+  conception:
+    main: /images/project-2/packaging.webp
+    secondary: ""
+  results:
+    main: /images/project-2/magazineCdc.webp
+    secondary: ""
+  carousel:
+    - /images/project-2/storyBoardCdc.webp
+    - /images/project-2/kickoffCdc.webp
+    - /images/project-2/distributeCdc.webp
+    - /images/project-2/fillTilesCdc.webp
+    - /images/project-2/mapCdc.webp
+    - /images/project-2/reviewsCdc.webp
+    - /images/project-2/checkCdc.webp
+    - /images/project-2/editCdc.webp
+    - /images/project-2/degitalCdc.webp
+credits:
+  client:
+    link: https://www.caissedesdepots.fr/
+  team:
+    - name: Louis Richard Marschal
+      link: https://www.linkedin.com/in/louis-richard-marschal-3b073ab2/
+    - name: Duaa Ali
+      link: https://www.linkedin.com/in/duaa-ali-design/
+  references:
+    - name: L'École de Design Nantes Atlantique
+      link: https://lecolededesign.com/
+    - name: Matthieu Gioani
+      link: https://www.linkedin.com/in/matthieugioani/
+      role: Supervision
+en:
+  title: Crafting an agile tool to design with ethics
+  client: Caisse des Dépôts et Consignations (CDC)
+  description: A tangible, methodological toolkit to track ethical, sustainable, and inclusive principles into major digital platform development.
+  role: Product designer
+  roleDescription: "I was part of a 2 to 5 person team for 8 months, handling the full spectrum: deep research, strategic concept, testing, and prototyping the final solution. The client, Caisse des Dépôts et Consignations, selected our project for subsequent development."
+  context: The digital sector already accounts for 3 to 4% of global greenhouse gas emissions, an impact growing by roughly 6% per year (<a href='https://theshiftproject.org/en/publications/virtual-worlds-networks/' target='_blank' rel='noopener' class='link'>The Shift Project, 2021</a>). This context triggered a conscious approach for the CDC. As a key financial institution, the CDC, through its Design Studio, launched a shift from a 'techno-vorous' approach to 'Thoughtful Digital.'
+  problem: How to do better with less? How can we create a cohesive, adaptive, and engaging methodological tool to harmonize ethical, eco-design, and inclusive principles across diverse projects. How to effectively translate abstract concepts into tangible, actionable steps? The main barrier was a critical lack of a common, shared vocabulary across teams.
+  keyInsights:
+    - "Strategic Alignment: Overcoming the lack of a shared vocabulary and securing formal decision-making."
+    - "Frugal & Scalable Design: The solution had to ensure scalability to save time, money, and energy."
+    - "Tangible Learning: Physical manipulation was required in addition to digital support, to encourage knowledge retention and interactions during team meetings."
+  methodology: |
+    We adopted a structured, double diamond approach:
+    1. Research & definition: Identified problems and solutions across Eco-Design, Inclusive Design, and Ethical Design pillars.
+    2. Concept alignment: Formalised a vision focused on 'Architecture and Information Structure' to create a centralized, scalable synthesized reference model.
+    3. Refining: Developed three concepts, ultimately selecting the modular 'Archipel' design tiles for their potential to facilitate collaborative, hands-on learning.
+  delivery: The concept was selected by the CDC and green-lit for subsequent internal development. I presented the study at the Nantes Digital Week and we led a dedicated development workshop with the CDC's internal design team in Paris. Delivered a reference database of 50 potential cards ready for printing, plus a final physical prototype of 36 of these cards (laser-cut tiles, graphic overlays, and magnetic backing) ready for scaling.
+  metrics:
+    - Won an award from the CDC and was published in EDNA magazine.
+    - Successfully delivered the prototype, including 36 ready-to-use cards and a scalable database of 50 cards.
+    - "User Satisfaction: achieved a Net Promoter Score of 7/10 or higher during the workshop at the Digital Factory."
+  designConception:
+    paragraph: |
+      The retained concept, 'Archipel,' is a set of tangible project construction tiles. It functions as a simple, adaptive aid for cross-functional project conception, in this specific case covering sustainability, ethics, and inclusivity. The tool's physical map can be digitized and synced with planning platforms (e.g., Jira, Trello). Each tile is color-coded by category (ethics/inclusive/eco), carries a role attribution, and includes a neutral space for custom details to help managers frame and monitor their projects.
+    listItems:
+      - The specific Notion and Task to perform.
+      - The Responsible Stakeholder (Project Manager, Designer, or Developer).
+      - The Priority and Timeline for implementation.
+fr:
+  title: Concevoir un outil agile pour designer avec éthique
+  client: Caisse des Dépôts et Consignations (CDC)
+  description: Un outil méthodologique tangible pour intégrer les principes d'éthique, de sobriété et d'inclusion dans le développement de plateformes numériques majeures.
+  role: Product designer
+  roleDescription: Pendant 8 mois, au sein d'une équipe de 2 à 5 personnes, j'ai couvert l'ensemble des processus de veille de recherche, idéation, tests et prototypage de la solution finale. La Caisse des Dépôts et Consignations a retenu notre projet pour un développement en interne.
+  context: Le numérique représente aujourd'hui 3 à 4% des émissions mondiales de gaz à effet de serre, un impact qui augmente d'environ 6% par an (<a href='https://theshiftproject.org/en/publications/virtual-worlds-networks/' target='_blank' rel='noopener' class='link'>The Shift Project, 2021</a>). Ce constat a déclenché une prise de conscience à la CDC, qui, via sa Digital Factory, a décidé de passer d'une approche 'technovore' à un numérique plus responsable.
+  problem: Comment faire mieux avec moins ? Comment créer un outil méthodologique cohérent, adaptatif et engageant pour intégrer les principes d'éthique, d'éco-conception et d'inclusion au sein de projets numériques variés. Comment traduire efficacement des concepts abstraits en étapes concrètes et actionnables ? Le principal frein était l'absence d'un vocabulaire commun entre les différentes équipes.
+  keyInsights:
+    - "Alignement stratégique : dépasser l'absence de vocabulaire commun et verrouiller une prise de décision formelle."
+    - "Design frugal : la solution devait garantir une scalabilité, économiser du temps, de l'argent et de l'énergie."
+    - "Apprentissage tangible : en complément d'un support digital, la manipulation physique était nécessaire pour favoriser la mémorisation et les interactions lors de réunions."
+  methodology:
+    - "Nous avons adopté une approche en double diamant :"
+    - "Recherche et définition : identification des problèmes à travers les piliers Éco-conception, Design inclusif et éthique."
+    - "Alignement du concept : formalisation d'une vision centrée sur l'architecture et la structure de l'information, pour créer une première table de référence scalable."
+    - "Raffinage : développement et confrontation de trois concepts différents. Les résultats des enquêtes nous ont menés à développer le concept 'Archipel' sous forme de tuiles, pour faciliter une utilisation collaborative, pratique et modulable."
+  delivery:
+    - "Le concept a été sélectionné par la CDC pour un développement interne ultérieur. J'ai présenté l'étude à la Nantes Digital Week et nous avons animé un atelier de développement avec l'équipe design interne de la CDC. Nous avons livré :"
+    - Une base de données de référence regroupant 50 cartes potentielles, prêtes à être imprimées et déclinées selon les besoins des projets.
+    - Un prototype physique regroupant 36 de ces cartes (tuiles réutilisables découpées au laser, couches graphiques, fixation magnétique).
+  metrics:
+    - Projet primé par la CDC et publié dans le magazine EDNA.
+    - Livraison du prototype, incluant la production de 36 cartes prêtes à l'emploi et une base de données scalable de 50 cartes.
+    - "Satisfaction utilisateur : Net Promoter Score de 7/10 ou plus auprès des participants à l'atelier à la Design Factory."
+  designConception:
+    paragraph: |
+      Le concept retenu, 'Archipel', est un ensemble de tuiles de construction de projet. Il fonctionne comme un support de cadrage et de suivi de projets transverses, ici appliqué aux enjeux de durabilité, d'éthique et d'inclusion. Les schémas conçus avec l'outil peuvent être digitalisés et synchronisés avec des plateformes de gestion de projet (Jira, Trello). Afin d'accompagner les managers à structurer et piloter leurs projets, chaque tuile possède une couleur de catégorie, une attribution de rôle ainsi qu'un espace neutre pour ajouter des détails personnalisés. On retrouve notamment :
+    listItems:
+      - La tâche spécifique à réaliser.
+      - Le responsable désigné (Chef de projet, Designer, Développeur, etc.).
+      - La priorisation et le calendrier de mise en œuvre.

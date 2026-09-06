@@ -15,17 +15,24 @@ export interface Props {
 
 const { project, lang } = Astro.props;
 const t = useTranslations(lang);
-const { Content } = await project.render();
 
-const plainTitle = plainText(project.data.title);
+// Shared, language-neutral data + the translated copy block for this locale.
+const data = project.data;
+const copy = lang === "fr" && data.fr ? data.fr : data.en;
+
+// Resolves an occasionally-localized credit string (see i18nString in config.ts).
+const creditRole = (role?: string | { en: string; fr: string }): string | undefined =>
+  typeof role === "string" || role === undefined ? role : role[lang];
+
+const plainTitle = plainText(copy.title);
 
 // context is optional and may be a bullet list (see keyInsights/metrics
 // pattern) — meta description and JSON-LD both require a flat string, so
 // collapse it here.
-const contextSummary = Array.isArray(project.data.context)
-  ? project.data.context.join(" ").replace(/<[^>]+>/g, "")
-  : (project.data.context ?? "").replace(/<[^>]+>/g, "");
-const metaDescription = project.data.description ?? contextSummary;
+const contextSummary = Array.isArray(copy.context)
+  ? copy.context.join(" ").replace(/<[^>]+>/g, "")
+  : (copy.context ?? "").replace(/<[^>]+>/g, "");
+const metaDescription = copy.description ?? contextSummary;
 
 // Per-project structured data (schema.org CreativeWork) for search engines / AI agents
 const seoBase = Astro.site ?? new URL("https://yassineelidrissi.com");
@@ -35,23 +42,35 @@ const projectLd = {
   name: plainTitle,
   headline: plainTitle,
   description: metaDescription,
-  url: new URL(getRelativeLocaleUrl(lang, `/work/${project.data.semanticSlug}`), seoBase).href,
-  image: new URL(project.data.cardImage, seoBase).href,
-  dateCreated: project.data.publishDate,
+  url: new URL(getRelativeLocaleUrl(lang, `/work/${data.semanticSlug}`), seoBase).href,
+  image: new URL(data.cover, seoBase).href,
+  dateCreated: data.publishDate,
   inLanguage: lang === "fr" ? "fr-FR" : "en-US",
   creator: {
     "@type": "Person",
     name: "Yassine El Idrissi",
     url: seoBase.href,
   },
-  about: project.data.client,
+  about: copy.client,
 };
 
 // --- Image logic ---
-const projectImages = project.data.projectImages || [];
+// Named images are flattened back to the positional layout the sections below expect:
+// [0/1] context · [2/3] role · [4/5] conception · [6/7] results · [8+] carousel.
+const projectImages = [
+  data.images.context.main,
+  data.images.context.secondary,
+  data.images.role.main,
+  data.images.role.secondary,
+  data.images.conception.main,
+  data.images.conception.secondary,
+  data.images.results.main,
+  data.images.results.secondary,
+  ...data.images.carousel,
+];
 
 // Main images (Index 0, 2, 4, 6)
-const contextImage = projectImages[0] || project.data.cardImage || "";
+const contextImage = projectImages[0] || data.cover || "";
 const roleImage = projectImages[2] || "";
 const conceptionImage = projectImages[4] || "";
 const resultsImage = projectImages[6] || "";
@@ -68,10 +87,10 @@ const allModalImages = projectImages;
 
 // --- Type Narrowing for the optional fields ---
 // Using destructuring with a default value for robustness
-const teamMembers = project.data.teamMembers || [];
-const references = project.data.references || [];
+const teamMembers = data.credits?.team ?? [];
+const references = data.credits?.references ?? [];
 // Using optional chaining (?) to access listItems
-const designConceptionList = project.data.designConception?.listItems || [];
+const designConceptionList = copy.designConception?.listItems || [];
 
 // All section fields (context, problem, roleDescription, keyInsights,
 // methodology, delivery, metrics) are optional — hide a section's
@@ -82,15 +101,15 @@ function hasContent(value?: string | string[]): boolean {
   return value.trim() !== "";
 }
 
-const hasContext = hasContent(project.data.context);
-const hasProblem = hasContent(project.data.problem);
-const hasRoleDescription = hasContent(project.data.roleDescription);
-const hasKeyInsights = hasContent(project.data.keyInsights);
-const hasMethodology = hasContent(project.data.methodology);
+const hasContext = hasContent(copy.context);
+const hasProblem = hasContent(copy.problem);
+const hasRoleDescription = hasContent(copy.roleDescription);
+const hasKeyInsights = hasContent(copy.keyInsights);
+const hasMethodology = hasContent(copy.methodology);
 const hasDesignConception =
-  Boolean(project.data.designConception?.paragraph?.trim()) || designConceptionList.length > 0;
-const hasDelivery = hasContent(project.data.delivery);
-const hasMetrics = hasContent(project.data.metrics);
+  Boolean(copy.designConception?.paragraph?.trim()) || designConceptionList.length > 0;
+const hasDelivery = hasContent(copy.delivery);
+const hasMetrics = hasContent(copy.metrics);
 
 // --- Design System (DS) classes for the Props (Arrow colors) ---
 const DS_CLASSES = {
@@ -108,22 +127,19 @@ const disabledVariant = "disabled";
 <BaseLayout
   title={`${t("project.titlePrefix")} | ${plainTitle}`}
   description={metaDescription}
-  image={project.data.cardImage}
+  image={data.cover}
+  imageAlt={plainTitle}
   structuredData={projectLd}
 >
   <Container>
     <div class="py-3xl max-w-content mx-auto space-y-3xl">
       <h1
         class="h-display"
-        set:html={project.data.title}
+        set:html={copy.title}
       />
 
-      <div class="prose prose-lg dark:prose-invert">
-        <Content />
-      </div>
-
       <section
-        id={`${project.data.semanticSlug}-diagnosis`}
+        id={`${data.semanticSlug}-diagnosis`}
         role="region"
         aria-label={t("project.diagnosis")}
         class="space-y-3xl"
@@ -133,7 +149,7 @@ const disabledVariant = "disabled";
         </h2>
 
         <article
-          id={`${project.data.semanticSlug}-context-problem`}
+          id={`${data.semanticSlug}-context-problem`}
           role="article"
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
@@ -144,15 +160,15 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.context")}
                   </h3>
-                  {Array.isArray(project.data.context) ? (
+                  {Array.isArray(copy.context) ? (
                     <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.context.map((item) => (
+                      {copy.context.map((item) => (
                         <li set:html={item} />
                       ))}
                     </ul>
                   ) : (
                     <p
-                      set:html={project.data.context}
+                      set:html={copy.context}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -166,15 +182,15 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.problem")}
                   </h3>
-                  {Array.isArray(project.data.problem) ? (
+                  {Array.isArray(copy.problem) ? (
                     <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.problem.map((item) => (
+                      {copy.problem.map((item) => (
                         <li set:html={item} />
                       ))}
                     </ul>
                   ) : (
                     <p
-                      set:html={project.data.problem}
+                      set:html={copy.problem}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -218,7 +234,7 @@ const disabledVariant = "disabled";
         </article>
 
         <article
-          id={`${project.data.semanticSlug}-role-insights`}
+          id={`${data.semanticSlug}-role-insights`}
           role="article"
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
@@ -229,15 +245,15 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.role")}
                   </h3>
-                  {Array.isArray(project.data.roleDescription) ? (
+                  {Array.isArray(copy.roleDescription) ? (
                     <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.roleDescription.map((item) => (
+                      {copy.roleDescription.map((item) => (
                         <li set:html={item} />
                       ))}
                     </ul>
                   ) : (
                     <p
-                      set:html={project.data.roleDescription}
+                      set:html={copy.roleDescription}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -250,15 +266,15 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.keyInsights")}
                   </h3>
-                  {Array.isArray(project.data.keyInsights) ? (
+                  {Array.isArray(copy.keyInsights) ? (
                     <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.keyInsights.map((insight) => (
+                      {copy.keyInsights.map((insight) => (
                         <li set:html={insight} />
                       ))}
                     </ul>
                   ) : (
                     <div
-                      set:html={project.data.keyInsights}
+                      set:html={copy.keyInsights}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -305,7 +321,7 @@ const disabledVariant = "disabled";
       <ProjectCarousel images={carouselImages} hideArrowsOnMobile={true} lang={lang} />
 
       <section
-        id={`${project.data.semanticSlug}-conception`}
+        id={`${data.semanticSlug}-conception`}
         role="region"
         aria-label={t("project.conception")}
         class="space-y-3xl"
@@ -326,15 +342,15 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.methodology")}
                   </h3>
-                  {Array.isArray(project.data.methodology) ? (
+                  {Array.isArray(copy.methodology) ? (
                     <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.methodology.map((item) => (
+                      {copy.methodology.map((item) => (
                         <li set:html={item} />
                       ))}
                     </ul>
                   ) : (
                     <p
-                      set:html={project.data.methodology}
+                      set:html={copy.methodology}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -348,9 +364,9 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.designConception")}
                   </h3>
-                  {project.data.designConception?.paragraph && (
+                  {copy.designConception?.paragraph && (
                     <div
-                      set:html={project.data.designConception.paragraph}
+                      set:html={copy.designConception.paragraph}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -402,7 +418,7 @@ const disabledVariant = "disabled";
       </section>
 
       <section
-        id={`${project.data.semanticSlug}-results`}
+        id={`${data.semanticSlug}-results`}
         role="region"
         aria-label={t("project.results")}
         class="space-y-3xl"
@@ -412,7 +428,7 @@ const disabledVariant = "disabled";
         </h2>
 
         <article
-          id={`${project.data.semanticSlug}-results-main`}
+          id={`${data.semanticSlug}-results-main`}
           role="article"
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
@@ -423,15 +439,15 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.delivery")}
                   </h3>
-                  {Array.isArray(project.data.delivery) ? (
+                  {Array.isArray(copy.delivery) ? (
                     <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.delivery.map((item) => (
+                      {copy.delivery.map((item) => (
                         <li set:html={item} />
                       ))}
                     </ul>
                   ) : (
                     <p
-                      set:html={project.data.delivery}
+                      set:html={copy.delivery}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -445,15 +461,15 @@ const disabledVariant = "disabled";
                   <h3 class="text-lg font-semibold text-text-body-secondary">
                     {t("project.metrics")}
                   </h3>
-                  {Array.isArray(project.data.metrics) ? (
+                  {Array.isArray(copy.metrics) ? (
                     <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {project.data.metrics.map((metric) => (
+                      {copy.metrics.map((metric) => (
                         <li set:html={metric} />
                       ))}
                     </ul>
                   ) : (
                     <div
-                      set:html={project.data.metrics}
+                      set:html={copy.metrics}
                       class="text-base text-text-body-primary leading-relaxed text-left"
                     />
                   )}
@@ -502,11 +518,11 @@ const disabledVariant = "disabled";
       {/* ---------------------------------------------------- */}
 
       {
-        (project.data.clientDetails?.name ||
+        (data.credits?.client ||
           teamMembers.length > 0 ||
           references.length > 0) && (
           <section
-            id={`${project.data.semanticSlug}-credits`}
+            id={`${data.semanticSlug}-credits`}
             role="contentinfo"
             aria-label={t("project.credits")}
             class="space-y-sm text-text-body-secondary mt-3xl border-t border-border-secondary pt-3xl"
@@ -546,7 +562,7 @@ const disabledVariant = "disabled";
                         >
                           {member.name}
                         </a>
-                        {member.role && <span>, {member.role}</span>}
+                        {creditRole(member.role) && <span>, {creditRole(member.role)}</span>}
                         {index < teamMembers.length - 2
                           ? ", "
                           : index === teamMembers.length - 2
@@ -558,17 +574,17 @@ const disabledVariant = "disabled";
                 </p>
               )}
 
-              {/* Line 2: Client (Displays if clientDetails exists AND if the client name exists) */}
-              {project.data.clientDetails?.name && (
+              {/* Line 2: Client (shown when credits.client is set; name = the localized client) */}
+              {data.credits?.client && (
                 <p>
                   <strong>{t("project.client")} :</strong>{" "}
                   <a
-                    href={project.data.clientDetails.link || "#"}
+                    href={data.credits.client.link || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link"
                   >
-                    {project.data.clientDetails.name}
+                    {copy.client}
                   </a>
                   .
                 </p>
@@ -590,7 +606,7 @@ const disabledVariant = "disabled";
                         >
                           {ref.name}
                         </a>
-                        {ref.role && <span>, {ref.role}</span>}
+                        {creditRole(ref.role) && <span>, {creditRole(ref.role)}</span>}
                         {index < references.length - 1 ? " | " : ""}
                       </span>
                     );

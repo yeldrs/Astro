@@ -13,7 +13,7 @@ server, no database, no runtime logic. Bilingual (EN at the root, FR under `/fr/
 | Layer | Tech |
 |---|---|
 | Framework | Astro 5 (`output: 'static'`, `build.format: 'file'`) |
-| Content | Content Collections (`.md` frontmatter, Zod-validated) |
+| Content | Content Collections (one `.yaml` per case study, Zod-validated) |
 | Styles | Tailwind CSS 3, driven by design tokens (`src/styles/tokens.js`) |
 | Types | TypeScript strict |
 

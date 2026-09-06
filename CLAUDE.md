@@ -27,7 +27,7 @@ Published case studies: 900.care, Caisse des Dépôts, Batchcooking. Draft: biom
 
 | I want to change… | Edit |
 |---|---|
-| Case-study copy / images / metrics | `src/content/projects/{en,fr}/<slug>.md` frontmatter |
+| Case-study copy / images / metrics | `src/content/projects/<name>.yaml` (one file, `en:` + `fr:` blocks) |
 | Home or About page content | `src/data/{home,about}.{en,fr}.ts` |
 | A user-facing UI label | `src/i18n/ui.ts` — **both** `en` and `fr`, read via `useTranslations()` |
 | Colour / spacing / radius / type | `src/styles/tokens.js` only (never hardcode in a component) |
@@ -39,20 +39,32 @@ Published case studies: 900.care, Caisse des Dépôts, Batchcooking. Draft: biom
 
 ## Content model (case studies)
 
-- One `.md` per case study per locale: `src/content/projects/en/<name>.md` +
-  `src/content/projects/fr/<name>.md`, **same `semanticSlug`** (it becomes the URL segment).
-  No `fr/` file ⇒ no `/fr/work/...` page for that project (not a bug).
-- Files hold **frontmatter only**, no Markdown body.
-- **Images: declared once, in `en/*.md`.** `cardImage` + `projectImages` are optional in the
-  schema so `fr/*.md` omits them entirely; `src/content/resolveImages.ts` fills them from the
-  `en/` sibling at build. **Never re-add `cardImage`/`projectImages` to a `fr/*.md`.**
-- `projectImages` is a **positional array** — index positions are semantic, never reorder or
-  compact, keep empty `""` slots:
-  `0/1` context · `2/3` role · `4/5` conception · `6/7` results · `8+` carousel.
+- **One YAML file per case study**: `src/content/projects/<name>.yaml`. Data collection
+  (`type: "data"`), validated by `src/content/config.ts` (Zod). A file that fails the schema
+  fails the build.
+- **Shared, language-neutral** fields at the top level: `semanticSlug` (kebab-case, becomes the
+  URL segment), `publishDate` (`YYYY-MM-DD`), `isDraft`, `cover`, `images`, `credits`.
+- **Translated copy** under `en:` and `fr:` blocks, same shape: `title`, `client`,
+  `description`, `role`, `roleDescription`, `context`, `problem`, `keyInsights`, `methodology`,
+  `designConception`, `delivery`, `metrics`. `en:` is required. **`fr:` absent ⇒ no
+  `/fr/work/<slug>` page** (not a bug).
+- **Images are named, not positional**:
+  ```yaml
+  images:
+    context:   { main: "/images/…", secondary: "" }
+    role:      { main: "/images/…", secondary: "" }
+    conception: { main: "…", secondary: "" }
+    results:   { main: "…", secondary: "" }
+    carousel:  ["/images/…", "…"]
+  ```
+  Images live in this one file (no per-locale duplication). Put files in
+  `public/images/<project>/`.
 - Section fields (`context`, `problem`, `roleDescription`, `keyInsights`, `methodology`,
   `designConception`, `delivery`, `metrics`) are each optional, accept a string **or** a
   `string[]` (rendered as a bulleted list). `ProjectLayout.astro` hides a section's heading +
   body when its field is missing or empty. Omitting the field is enough.
+- `credits.team[].role` / `credits.references[].role` accept a string, or `{ en, fr }` when the
+  role genuinely differs per locale.
 
 ## Design token chain
 
@@ -67,8 +79,6 @@ map). Change a colour once in `tokens.js`, the whole cascade follows.
 
 - Never hardcode a colour / spacing / radius in a component — route through `tokens.js`.
 - Never re-declare the colour map in `tailwind.config.mjs` — keep it `{ ...tokens.semantic.colors }`.
-- Never reorder or compact `projectImages`; never drop an empty `""` slot.
-- Never declare `cardImage` / `projectImages` in a `fr/*.md` (or any non-`en/`) file.
 - Never hardcode a user-facing string in a component — add a key to **both** locales in `ui.ts`.
 - Never edit the **wording** of any content the owner authored (case studies
   `src/content/projects/**`, CV/about `src/data/about.*.ts`, home `src/data/home.*.ts`, or any
@@ -89,7 +99,7 @@ If a request breaks one of these: stop, name the rule, propose the compliant alt
 
 1. Identify the layer (table above). Don't blur layers in one change.
 2. Content changes: check mentally against the Zod schema (`config.ts`) — required fields,
-   kebab-case slug, `projectImages` index positions, `fr/*.md` has no image fields.
+   kebab-case slug, `YYYY-MM-DD` date, translated copy in the `en:`/`fr:` blocks.
 3. Design changes: `tokens.js` only.
 4. Shared component: check its importers first.
 5. Anything touching `astro.config.mjs` redirects, `deploy.yml`, or the schema: ask one
