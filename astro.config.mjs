@@ -1,15 +1,16 @@
 // astro.config.mjs
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
-import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   site: 'https://yassineelidrissi.com',
-  // ✅ 2. Slash handling: 'ignore' allows responding to both versions
+  // Tolerate both /about and /about/ (GitHub Pages serves the extensionless form).
   trailingSlash: 'ignore',
 
-  // ✅ 3. 'directory' format to create /about/index.html (better for SEO and compatibility)
+  // 'file' → emits /about.html rather than /about/index.html. Note: this means
+  // no dist/fr/index.html exists, so locale-root links must be "/fr" not "/fr/"
+  // and fragment links "/fr#projects" not "/fr/#projects" (see src/i18n/utils.ts).
   build: {
     format: 'file'
   },
@@ -27,7 +28,6 @@ export default defineConfig({
 
   integrations: [
     tailwind(),
-    mdx(),
     sitemap({
       i18n: {
         defaultLocale: 'en',
@@ -44,11 +44,10 @@ export default defineConfig({
     '/aboutme': '/about',
     '/logos': '/',
     '/photography': '/',
-    '/fr/work': '/fr/#projects',
-    '/fr/projects': '/fr/#projects',
+    '/fr/work': '/fr#projects',
+    '/fr/projects': '/fr#projects',
     '/fr/aboutme': '/fr/about',
     '/fr/logos': '/fr',
     '/fr/photography': '/fr',
   }
 });
-// Fichier : astro.config.mjs
