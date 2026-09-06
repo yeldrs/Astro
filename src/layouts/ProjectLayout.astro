@@ -5,6 +5,8 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import BaseLayout from "./BaseLayout.astro";
 import Container from "../components/Container.astro";
 import ProjectCarousel from "../components/ProjectCarousel.astro";
+import ProjectSection from "../components/ProjectSection.astro";
+import ProjectFigure from "../components/ProjectFigure.astro";
 import ArrowButton from "../components/ArrowButton.astro";
 import { useTranslations, plainText } from "../i18n/utils";
 
@@ -85,31 +87,14 @@ const resultsImage2 = projectImages[7] || "";
 const carouselImages = projectImages.slice(8);
 const allModalImages = projectImages;
 
-// --- Type Narrowing for the optional fields ---
-// Using destructuring with a default value for robustness
 const teamMembers = data.credits?.team ?? [];
 const references = data.credits?.references ?? [];
-// Using optional chaining (?) to access listItems
+
+// designConception has its own (paragraph + listItems) shape, so it stays inline
+// rather than going through <ProjectSection>. Every other section field does.
 const designConceptionList = copy.designConception?.listItems || [];
-
-// All section fields (context, problem, roleDescription, keyInsights,
-// methodology, delivery, metrics) are optional — hide a section's
-// heading/body entirely when its value is missing or empty.
-function hasContent(value?: string | string[]): boolean {
-  if (!value) return false;
-  if (Array.isArray(value)) return value.some((item) => item.trim() !== "");
-  return value.trim() !== "";
-}
-
-const hasContext = hasContent(copy.context);
-const hasProblem = hasContent(copy.problem);
-const hasRoleDescription = hasContent(copy.roleDescription);
-const hasKeyInsights = hasContent(copy.keyInsights);
-const hasMethodology = hasContent(copy.methodology);
 const hasDesignConception =
   Boolean(copy.designConception?.paragraph?.trim()) || designConceptionList.length > 0;
-const hasDelivery = hasContent(copy.delivery);
-const hasMetrics = hasContent(copy.metrics);
 
 // --- Design System (DS) classes for the Props (Arrow colors) ---
 const DS_CLASSES = {
@@ -154,82 +139,19 @@ const disabledVariant = "disabled";
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
           <div class="space-y-md">
-            {
-              hasContext && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.context")}
-                  </h3>
-                  {Array.isArray(copy.context) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {copy.context.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={copy.context}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
-
-            {
-              hasProblem && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.problem")}
-                  </h3>
-                  {Array.isArray(copy.problem) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {copy.problem.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={copy.problem}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
+            <ProjectSection title={t("project.context")} value={copy.context} />
+            <ProjectSection title={t("project.problem")} value={copy.problem} />
           </div>
 
           <div class="space-y-md">
-            {
-              contextImage && (
-                <div
-                  onclick={`showImageModal('${contextImage}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={contextImage}
-                    alt={`${t("project.context")} ${t("project.visualization")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
-            {
-              contextImage2 && (
-                <div
-                  onclick={`showImageModal('${contextImage2}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={contextImage2}
-                    alt={`${t("project.context")} ${t("project.visualizationSecondary")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
+            <ProjectFigure
+              src={contextImage}
+              alt={`${t("project.context")} ${t("project.visualization")}`}
+            />
+            <ProjectFigure
+              src={contextImage2}
+              alt={`${t("project.context")} ${t("project.visualizationSecondary")}`}
+            />
           </div>
         </article>
 
@@ -239,81 +161,19 @@ const disabledVariant = "disabled";
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
           <div class="space-y-md">
-            {
-              hasRoleDescription && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.role")}
-                  </h3>
-                  {Array.isArray(copy.roleDescription) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {copy.roleDescription.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={copy.roleDescription}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
-            {
-              hasKeyInsights && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.keyInsights")}
-                  </h3>
-                  {Array.isArray(copy.keyInsights) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {copy.keyInsights.map((insight) => (
-                        <li set:html={insight} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <div
-                      set:html={copy.keyInsights}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
+            <ProjectSection title={t("project.role")} value={copy.roleDescription} />
+            <ProjectSection title={t("project.keyInsights")} value={copy.keyInsights} />
           </div>
 
           <div class="space-y-md">
-            {
-              roleImage && (
-                <div
-                  onclick={`showImageModal('${roleImage}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={roleImage}
-                    alt={`${t("project.role")} ${t("project.visualization")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
-            {
-              roleImage2 && (
-                <div
-                  onclick={`showImageModal('${roleImage2}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={roleImage2}
-                    alt={`${t("project.role")} ${t("project.visualizationSecondary")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
+            <ProjectFigure
+              src={roleImage}
+              alt={`${t("project.role")} ${t("project.visualization")}`}
+            />
+            <ProjectFigure
+              src={roleImage2}
+              alt={`${t("project.role")} ${t("project.visualizationSecondary")}`}
+            />
           </div>
         </article>
       </section>
@@ -336,27 +196,7 @@ const disabledVariant = "disabled";
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
           <div class="space-y-md">
-            {
-              hasMethodology && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.methodology")}
-                  </h3>
-                  {Array.isArray(copy.methodology) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {copy.methodology.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={copy.methodology}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
+            <ProjectSection title={t("project.methodology")} value={copy.methodology} />
 
             {
               hasDesignConception && (
@@ -383,36 +223,14 @@ const disabledVariant = "disabled";
           </div>
 
           <div class="space-y-md">
-            {
-              conceptionImage && (
-                <div
-                  onclick={`showImageModal('${conceptionImage}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={conceptionImage}
-                    alt={`${t("project.conception")} ${t("project.visualization")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
-            {
-              conceptionImage2 && (
-                <div
-                  onclick={`showImageModal('${conceptionImage2}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={conceptionImage2}
-                    alt={`${t("project.conception")} ${t("project.visualizationSecondary")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
+            <ProjectFigure
+              src={conceptionImage}
+              alt={`${t("project.conception")} ${t("project.visualization")}`}
+            />
+            <ProjectFigure
+              src={conceptionImage2}
+              alt={`${t("project.conception")} ${t("project.visualizationSecondary")}`}
+            />
           </div>
         </article>
       </section>
@@ -433,82 +251,19 @@ const disabledVariant = "disabled";
           class="grid grid-cols-1 md:grid-cols-2 gap-y-3xl md:gap-x-4xl items-start"
         >
           <div class="space-y-md">
-            {
-              hasDelivery && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.delivery")}
-                  </h3>
-                  {Array.isArray(copy.delivery) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {copy.delivery.map((item) => (
-                        <li set:html={item} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p
-                      set:html={copy.delivery}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
-
-            {
-              hasMetrics && (
-                <div class="space-y-sm">
-                  <h3 class="text-lg font-semibold text-text-body-secondary">
-                    {t("project.metrics")}
-                  </h3>
-                  {Array.isArray(copy.metrics) ? (
-                    <ul class="list-disc pl-5 text-base text-text-body-primary leading-relaxed text-left">
-                      {copy.metrics.map((metric) => (
-                        <li set:html={metric} />
-                      ))}
-                    </ul>
-                  ) : (
-                    <div
-                      set:html={copy.metrics}
-                      class="text-base text-text-body-primary leading-relaxed text-left"
-                    />
-                  )}
-                </div>
-              )
-            }
+            <ProjectSection title={t("project.delivery")} value={copy.delivery} />
+            <ProjectSection title={t("project.metrics")} value={copy.metrics} />
           </div>
 
           <div class="space-y-md">
-            {
-              resultsImage && (
-                <div
-                  onclick={`showImageModal('${resultsImage}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={resultsImage}
-                    alt={`${t("project.results")} ${t("project.visualization")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
-            {
-              resultsImage2 && (
-                <div
-                  onclick={`showImageModal('${resultsImage2}')`}
-                  class="relative w-full rounded-2xl overflow-hidden bg-background-primary cursor-pointer block"
-                >
-                  <img
-                    src={resultsImage2}
-                    alt={`${t("project.results")} ${t("project.visualizationSecondary")}`}
-                    class="w-full h-auto object-contain object-center block rounded-2xl transition-transform hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                </div>
-              )
-            }
+            <ProjectFigure
+              src={resultsImage}
+              alt={`${t("project.results")} ${t("project.visualization")}`}
+            />
+            <ProjectFigure
+              src={resultsImage2}
+              alt={`${t("project.results")} ${t("project.visualizationSecondary")}`}
+            />
           </div>
         </article>
       </section>
