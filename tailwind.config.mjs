@@ -19,9 +19,12 @@ export default {
         serif: ['Lora', 'ui-serif', 'Georgia', 'serif'],
       },
       // Colors: consumes the semantic layer directly (single source = tokens.js).
-      // No duplicated mapping here → no possible divergence.
+      // No duplicated mapping here → no possible divergence. `gray` is also exposed
+      // so raw `bg-gray-*` / `border-gray-*` classes resolve to the token ramp
+      // rather than Tailwind's built-in one.
       colors: {
         ...tokens.semantic.colors,
+        gray: tokens.primitives.color.gray,
       },
 
 
@@ -29,6 +32,9 @@ export default {
       // Font sizes (Composed styles: [font-size, {lineHeight: ratio}])
       fontSize: {
         // Body text
+        'xs': [tokens.primitives.fontSize.xs, {
+          lineHeight: '1.333'
+        }], // 12px / 16px
         'sm': [tokens.primitives.fontSize.sm, {
           lineHeight: '1.143'
         }], // 14px / 16px

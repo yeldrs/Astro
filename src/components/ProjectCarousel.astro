@@ -21,15 +21,6 @@ const dots = images.map((_, index) => ({
   index: index,
 }));
 
-// Design System (DS) classes for the Props
-const DS_CLASSES = {
-  mainDefault: "stroke-primary",
-  mainHover: "stroke-primary-hover",
-  tertiaryDefault: "stroke-tertiary",
-  tertiaryHover: "stroke-tertiary-hover",
-  disabledColor: "stroke-disabled",
-} as const;
-
 const prevInitialVariant = "disabled";
 const activeVariant = "main";
 
@@ -51,8 +42,7 @@ export const isAstroComponent = true;
       direction="left"
       variant={prevInitialVariant as any}
       onClick="window.handleCarouselNavigation(-1)"
-      isMobile={false}
-      {...DS_CLASSES}
+      isMobile={false}
       class={hideArrowsOnMobile ? "hidden md:block" : ""}
     />
 
@@ -84,8 +74,7 @@ export const isAstroComponent = true;
       direction="right"
       variant={activeVariant as any}
       onClick="window.handleCarouselNavigation(1)"
-      isMobile={false}
-      {...DS_CLASSES}
+      isMobile={false}
       class={hideArrowsOnMobile ? "hidden md:block" : ""}
     />
   </div>
@@ -101,8 +90,7 @@ export const isAstroComponent = true;
       direction="left"
       variant={prevInitialVariant as any}
       onClick="window.handleCarouselNavigation(-1)"
-      isMobile={true}
-      {...DS_CLASSES}
+      isMobile={true}
     />
 
     {/* Dots container */}
@@ -126,8 +114,7 @@ export const isAstroComponent = true;
       direction="right"
       variant={activeVariant as any}
       onClick="window.handleCarouselNavigation(1)"
-      isMobile={true}
-      {...DS_CLASSES}
+      isMobile={true}
     />
   </div>
 </section>

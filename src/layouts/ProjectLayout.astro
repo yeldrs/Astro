@@ -8,6 +8,7 @@ import ProjectCarousel from "../components/ProjectCarousel.astro";
 import ProjectSection from "../components/ProjectSection.astro";
 import ProjectFigure from "../components/ProjectFigure.astro";
 import ArrowButton from "../components/ArrowButton.astro";
+import { LOCALES } from "../i18n/locales";
 import { useTranslations, plainText } from "../i18n/utils";
 
 export interface Props {
@@ -47,7 +48,7 @@ const projectLd = {
   url: new URL(getRelativeLocaleUrl(lang, `/work/${data.semanticSlug}`), seoBase).href,
   image: new URL(data.cover, seoBase).href,
   dateCreated: data.publishDate,
-  inLanguage: lang === "fr" ? "fr-FR" : "en-US",
+  inLanguage: LOCALES[lang].bcp47,
   creator: {
     "@type": "Person",
     name: "Yassine El Idrissi",
@@ -95,15 +96,6 @@ const references = data.credits?.references ?? [];
 const designConceptionList = copy.designConception?.listItems || [];
 const hasDesignConception =
   Boolean(copy.designConception?.paragraph?.trim()) || designConceptionList.length > 0;
-
-// --- Design System (DS) classes for the Props (Arrow colors) ---
-const DS_CLASSES = {
-  mainDefault: "stroke-primary",
-  mainHover: "stroke-primary-hover",
-  tertiaryDefault: "stroke-tertiary",
-  tertiaryHover: "stroke-tertiary-hover",
-  disabledColor: "stroke-disabled",
-};
 
 const tertiaryVariant = "tertiary";
 const disabledVariant = "disabled";
@@ -403,7 +395,6 @@ const disabledVariant = "disabled";
         variant={disabledVariant as any}
         onClick="window.navigateModal(-1)"
         class="absolute left-0 z-10 transition-opacity disabled:opacity-30 disabled:pointer-events-none"
-        {...DS_CLASSES}
       />
 
       <img
@@ -420,7 +411,6 @@ const disabledVariant = "disabled";
         variant={tertiaryVariant as any}
         onClick="window.navigateModal(1)"
         class="absolute right-0 z-10 transition-opacity disabled:opacity-30 disabled:pointer-events-none"
-        {...DS_CLASSES}
       />
     </div>
   </div>

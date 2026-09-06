@@ -34,6 +34,10 @@ Format: `- [ ] <area> — <what> — <why> (<severity>)`
 - [ ] `text-md` — used in `Button.astro`, `Footer.astro`, `HomeLayout.astro`, `404.astro`.
       No such class exists (not in tokens, not a Tailwind default) → silent no-op, size is
       inherited. Needs a deliberate pass with the owner to pick the intended size. (low)
+- [ ] Copy-email toast JS (~40 lines) is duplicated between `Footer.astro` and
+      `AboutLayout.astro`. Extract to one shared script helper. Deferred from the 2026-09
+      restructuring (behaviour-identical but the emitted inline JS changes, needs a manual
+      click test). (low)
 
 ## Tooling / infra
 

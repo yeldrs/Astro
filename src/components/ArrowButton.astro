@@ -2,38 +2,25 @@
 export interface Props {
 direction: 'left' | 'right';
 variant?: 'main' | 'tertiary' | 'disabled';
-onClick?: string; 
+onClick?: string;
 id?: string; // <- made optional
 label: string;
-isMobile?: boolean; 
-isHidden?: boolean; 
-class?: string; 
+isMobile?: boolean;
+isHidden?: boolean;
+class?: string;
 disabled?: boolean;
-
-// These props will NOT be used for visual display temporarily
-mainDefault: string; 
-mainHover: string; 
-tertiaryDefault: string; 
-tertiaryHover: string; 
-disabledColor: string; 
 }
 
-const { 
-direction, 
-variant = 'main', 
-onClick, 
-id, 
-label, 
-isMobile = false, 
+const {
+direction,
+variant = 'main',
+onClick,
+id,
+label,
+isMobile = false,
 isHidden = false,
 class: className = '', // default to empty string
 disabled = false,
-// The color props are extracted but ignored for styling
-mainDefault,
-mainHover,
-tertiaryDefault,
-tertiaryHover,
-disabledColor,
 } = Astro.props;
 
 // 1. Determine the state and invisibility classes
